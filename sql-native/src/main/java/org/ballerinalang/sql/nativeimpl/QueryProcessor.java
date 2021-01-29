@@ -18,7 +18,6 @@
 
 package org.ballerinalang.sql.nativeimpl;
 
-
 import io.ballerina.runtime.api.creators.TypeCreator;
 import io.ballerina.runtime.api.creators.ValueCreator;
 import io.ballerina.runtime.api.types.StructureType;
@@ -32,6 +31,7 @@ import org.ballerinalang.sql.Constants;
 import org.ballerinalang.sql.datasource.SQLDatasource;
 import org.ballerinalang.sql.exception.ApplicationError;
 import org.ballerinalang.sql.parameterprocessor.ResultParameterProcessor;
+import org.ballerinalang.sql.parameterprocessor.StatementParameterProcessor;
 import org.ballerinalang.sql.utils.ColumnDefinition;
 import org.ballerinalang.sql.utils.ErrorGenerator;
 import org.ballerinalang.sql.utils.ModuleUtils;
@@ -49,15 +49,15 @@ import java.util.List;
 public class QueryProcessor {
 
     public static BStream nativeQuery(BObject client, Object paramSQLString,
-                                      Object recordType){
-        StatementParameterProcessor statementParametersProcessor = StatementParameterProcessor.getInstance();
-        ResultParameterProcessor resultParametersProcessor = ResultParameterProcessor.getInstance();
+                                      Object recordType) {
+        StatementParameterProcessor statementParameterProcessor = StatementParameterProcessor.getInstance();
+        ResultParameterProcessor resultParameterProcessor = ResultParameterProcessor.getInstance();
         return nativeQuery(client, paramSQLString, recordType, statementParameterProcessor, resultParameterProcessor);
     }
 
     public static BStream nativeQuery(BObject client, Object paramSQLString,
-                                      Object recordType, StatementParametersProcessor statementParametersProcessor,
-                                      ResultParametersProcessor resultParametersProcessor
+                                      Object recordType, StatementParameterProcessor statementParametersProcessor,
+                                      ResultParameterProcessor resultParametersProcessor
     ) {
         Object dbClient = client.getNativeData(Constants.DATABASE_CLIENT);
         TransactionResourceManager trxResourceManager = TransactionResourceManager.getInstance();
@@ -89,8 +89,8 @@ public class QueryProcessor {
                     columnDefinitions = Utils.getColumnDefinitions(resultSet, streamConstraint);
                 }
                 return ValueCreator.createStreamValue(TypeCreator.createStreamType(streamConstraint),
-                        resultParametersProcessor.createRecordIterator(resultSet, statement, connection, columnDefinitions,
-                                streamConstraint));
+                        resultParametersProcessor.createRecordIterator(resultSet, statement, connection,
+                                columnDefinitions, streamConstraint));
             } catch (SQLException e) {
                 Utils.closeResources(trxResourceManager, resultSet, statement, connection);
                 BError errorValue = ErrorGenerator.getSQLDatabaseError(e,

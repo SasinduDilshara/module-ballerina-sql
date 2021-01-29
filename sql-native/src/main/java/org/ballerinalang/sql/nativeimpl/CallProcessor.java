@@ -309,7 +309,7 @@ public class CallProcessor {
                             statement.getSQLXML(paramIndex));
                     break;
                 default:
-                    resultParameterProcessor.populateCustomOutParameters(paramIndex, sqlType, parameter);
+                    resultParameterProcessor.populateCustomOutParameters(statement, parameter, paramIndex, sqlType);
             }
         }
     }

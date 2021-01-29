@@ -1,13 +1,13 @@
 [package]
 org = "ballerina"
 name = "sql"
-version = "@toml.version@"
+version = "0.5.5"
 
 [[platform.java11.dependency]]
-path = "../sql-native/build/libs/sql-native-@project.version@.jar"
+path = "../sql-native/build/libs/sql-native-0.5.5-SNAPSHOT.jar"
 groupId = "ballerina"
 artifactId = "sql-native"
-version = "@project.version@"
+version = "0.5.5-SNAPSHOT"
 
 [[platform.java11.dependency]]
 path = "./lib/HikariCP-3.3.1.jar"

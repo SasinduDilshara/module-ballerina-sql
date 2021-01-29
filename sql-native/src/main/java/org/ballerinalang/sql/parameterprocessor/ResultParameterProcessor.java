@@ -70,6 +70,10 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
     private static final Object lock = new Object();
     private static volatile ResultParameterProcessor instance;
 
+    // TODO: remove after testing
+    private static final Object lock2 = new Object();
+    private static volatile BObject iteratorObject;
+
     private static final ArrayType stringArrayType = TypeCreator.createArrayType(PredefinedTypes.TYPE_STRING);
     private static final ArrayType booleanArrayType = TypeCreator.createArrayType(PredefinedTypes.TYPE_BOOLEAN);
     private static final ArrayType intArrayType = TypeCreator.createArrayType(PredefinedTypes.TYPE_INT);
@@ -719,7 +723,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
     }
 
     @Override
-    protected void populateCustomOutParameters(CallableStatement statement, BObject parameter, int paramIndex, int sqlType)
+    public void populateCustomOutParameters(CallableStatement statement, BObject parameter, int paramIndex, int sqlType)
             throws ApplicationError {
         throw new ApplicationError("Unsupported SQL type '" + sqlType + "' when reading Procedure call " +
                 "Out parameter of index '" + paramIndex + "'.");
@@ -730,14 +734,30 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
         return ErrorGenerator.getSQLApplicationError("Unsupported SQL type " + sqlType);
     }
 
+
+    // TODO: change to return null after testing
+    protected BObject getIteratorObject() {
+        if (iteratorObject == null) {
+            synchronized (lock2) {
+                if (iteratorObject == null) {
+                    iteratorObject = ValueCreator.createObjectValue(
+                            ModuleUtils.getModule(), "TestResultIterator");
+                }
+            }
+        }
+        return iteratorObject;
+    }
+
     // TODO: change after record iterator refactoring
     public BObject createRecordIterator(ResultSet resultSet,
                                                Statement statement,
                                                Connection connection, List<ColumnDefinition> columnDefinitions,
                                                StructureType streamConstraint) {
 
+        BObject iteratorObject = this.getIteratorObject();
+
         BObject resultIterator = ValueCreator.createObjectValue(ModuleUtils.getModule(),
-                Constants.RESULT_ITERATOR_OBJECT, new Object[1]);
+                Constants.RESULT_ITERATOR_OBJECT, new Object[1], iteratorObject);
         resultIterator.addNativeData(Constants.RESULT_SET_NATIVE_DATA_FIELD, resultSet);
         resultIterator.addNativeData(Constants.STATEMENT_NATIVE_DATA_FIELD, statement);
         resultIterator.addNativeData(Constants.CONNECTION_NATIVE_DATA_FIELD, connection);
