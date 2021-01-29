@@ -30,7 +30,7 @@ import java.sql.SQLException;
 
 abstract class AbstractStatementParameterProcessor {
 
-    protected abstract int getCustomOutParameter(BObject typedValue) throws ApplicationError;
+    protected abstract int getCustomOutParameterType(BObject typedValue) throws ApplicationError;
     protected abstract int getCustomSQLType(BObject typedValue) throws ApplicationError;
     protected abstract void setCustomSqlTypedParam(Connection connection, PreparedStatement preparedStatement,
                             int index, BObject typedValue)

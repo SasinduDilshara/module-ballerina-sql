@@ -16,7 +16,7 @@
  *  under the License.
  */
 
-package org.ballerinalang.sql.nativeprocessor;
+package org.ballerinalang.sql.nativeimpl;
 
 import io.ballerina.runtime.api.creators.TypeCreator;
 import io.ballerina.runtime.api.creators.ValueCreator;

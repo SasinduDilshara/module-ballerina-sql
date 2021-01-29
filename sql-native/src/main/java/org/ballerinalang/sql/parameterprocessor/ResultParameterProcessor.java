@@ -36,14 +36,19 @@ import io.ballerina.runtime.api.values.BString;
 import io.ballerina.runtime.api.values.BXml;
 import org.ballerinalang.sql.Constants;
 import org.ballerinalang.sql.exception.ApplicationError;
+import org.ballerinalang.sql.utils.ColumnDefinition;
+import org.ballerinalang.sql.utils.ModuleUtils;
 import org.ballerinalang.sql.utils.Utils;
 
 import java.math.BigDecimal;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLXML;
+import java.sql.Statement;
 import java.sql.Struct;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -74,7 +79,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
             .getInstance(TimeZone.getTimeZone(Constants.TIMEZONE_UTC.getValue()));
 
 
-    public ResultParameterProcessor getInstance() {
+    public static ResultParameterProcessor getInstance() {
         if (instance == null) {
             synchronized (lock) {
                 if (instance == null) {
@@ -83,6 +88,26 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
             }
         }
         return instance;
+    }
+
+    public static BObject createRecordIterator(ResultSet resultSet,
+                                               Statement statement,
+                                               Connection connection, List<ColumnDefinition> columnDefinitions,
+                                               StructureType streamConstraint) {
+        BObject resultIterator = ValueCreator.createObjectValue(ModuleUtils.getModule(),
+                Constants.RESULT_ITERATOR_OBJECT, new Object[1]);
+        resultIterator.addNativeData(Constants.RESULT_SET_NATIVE_DATA_FIELD, resultSet);
+        resultIterator.addNativeData(Constants.STATEMENT_NATIVE_DATA_FIELD, statement);
+        resultIterator.addNativeData(Constants.CONNECTION_NATIVE_DATA_FIELD, connection);
+        resultIterator.addNativeData(Constants.COLUMN_DEFINITIONS_DATA_FIELD, columnDefinitions);
+        resultIterator.addNativeData(Constants.RECORD_TYPE_DATA_FIELD, streamConstraint);
+        return resultIterator;
+    }
+
+    public void populateCustomOutParameters(int paramIndex, int sqlType,
+                BObject parameter) throws ApplicationError {
+        throw new ApplicationError("Unsupported SQL type '" + sqlType + "' when reading Procedure call " +
+                            "Out parameter of index '" + paramIndex + "'.");
     }
 
     protected BArray createAndPopulateBBRefValueArray(Object firstNonNullElement, Object[] dataArray,

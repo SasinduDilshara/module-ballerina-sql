@@ -170,7 +170,7 @@ public class StatementParameterProcessor extends AbstractStatementParameterProce
                 sqlTypeValue = Types.ROWID;
                 break;
             default:
-                sqlTypeValue = getCustomOutParameter(typedValue);
+                sqlTypeValue = getCustomSQLType(typedValue);
         }
         return sqlTypeValue;
     }
@@ -344,7 +344,7 @@ public class StatementParameterProcessor extends AbstractStatementParameterProce
         }
     }
 
-    private int setSQLValueParam(Connection connection, PreparedStatement preparedStatement,
+    public int setSQLValueParam(Connection connection, PreparedStatement preparedStatement,
                                    Object object, int index, boolean returnType)
             throws SQLException, ApplicationError, IOException {
         if (object == null) {
@@ -560,7 +560,7 @@ public class StatementParameterProcessor extends AbstractStatementParameterProce
     }
 
     @Override
-    protected int getCustomOutParameter(BObject typedValue) throws ApplicationError {
+    public int getCustomOutParameterType(BObject typedValue) throws ApplicationError {
         String sqlType = typedValue.getType().getName();
         throw new ApplicationError("Unsupported OutParameter type: " + sqlType);
     }
