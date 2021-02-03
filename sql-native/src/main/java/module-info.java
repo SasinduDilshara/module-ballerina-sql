@@ -27,4 +27,5 @@ module io.ballerina.stdlib.sql {
     exports org.ballerinalang.sql.utils;
     exports org.ballerinalang.sql.datasource;
     exports org.ballerinalang.sql.parameterprocessor;
+    exports org.ballerinalang.sql.nativeimpl;
 }

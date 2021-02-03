@@ -39,12 +39,12 @@ abstract class AbstractStatementParameterProcessor {
     protected abstract Object[] getCustomStructData(Object value, Connection conn) 
             throws SQLException, ApplicationError;
 
-    protected abstract void setVarchar(int index, String value, PreparedStatement preparedStatement)
+    protected abstract void setVarchar(int index, Object value, PreparedStatement preparedStatement)
             throws SQLException;
-    protected abstract void setText(int index, String value, PreparedStatement preparedStatement) throws SQLException;
-    protected abstract void setChar(int index, String value, PreparedStatement preparedStatement) throws SQLException;
-    protected abstract void setNChar(int index, String value, PreparedStatement preparedStatement) throws SQLException;
-    protected abstract void setNVarchar(int index, String value, PreparedStatement preparedStatement)
+    protected abstract void setText(int index, Object value, PreparedStatement preparedStatement) throws SQLException;
+    protected abstract void setChar(int index, Object value, PreparedStatement preparedStatement) throws SQLException;
+    protected abstract void setNChar(int index, Object value, PreparedStatement preparedStatement) throws SQLException;
+    protected abstract void setNVarchar(int index, Object value, PreparedStatement preparedStatement)
             throws SQLException;
     protected abstract void setBit(int index, Object value, PreparedStatement preparedStatement, String sqlType)
             throws SQLException, ApplicationError;
