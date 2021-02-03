@@ -26,6 +26,14 @@ public type TypedValue object {
     anydata|object {}? value;
 };
 
+// # Represents a parameter for the SQL Client that allows SQL connector modules to extend to 
+// # create custom parameters that needs to be passed to the remote function.
+// #
+// # + value - Value of parameter passed into the SQL statement
+// public type CustomTypedValue object {
+//     public anydata|object {}? value;
+// };
+
 # Possible type of parameters that can be passed into the SQL query.
 public type Value string|int|boolean|float|decimal|byte[]|xml|TypedValue?;
 
@@ -345,7 +353,12 @@ public type ExecutionResult record {
 };
 
 # The result iterator object that is used to iterate through the results in the event stream.
-#
+# 
+# + customResultIterator - The instance of the custom ballerina class that is structurally equivalent to
+#                          CustomResultIterator object type. This instance includes a custom implementation
+#                          of the nextResult method. 
+# + err - Used to hold any error to be returned 
+# + isClosed - The boolean flag used to indicate that the result iterator is closed 
 class ResultIterator {
     private boolean isClosed = false;
     private Error? err;
@@ -400,6 +413,9 @@ class ResultIterator {
     }
 }
 
+# The custom result iterator object type that is used as a structure to define custom
+# result iterator classes in connector modules
+# 
 public type CustomResultIterator object{
     isolated function nextResult(ResultIterator iterator) returns record {}|Error?;
 };
@@ -766,6 +782,7 @@ public type ParameterizedCallQuery object {
 #
 # + executionResult - Summary of the execution of DML/DLL query
 # + queryResult - Results from SQL query
+# + customProcedureCallResult - custom procedure call result object type instance
 public class ProcedureCallResult {
     public ExecutionResult? executionResult = ();
     public stream<record {}, Error>? queryResult = ();
@@ -794,7 +811,9 @@ public class ProcedureCallResult {
     }
 }
 
+# The custom result procesureCallResult object type that is used as a structure to define custom
+# procesureCallResult classes in connector modules
+# 
 public type CustomProcedureCallResult object{
     isolated function getNextQueryResult(ProcedureCallResult callResult) returns boolean|Error;
 };
-

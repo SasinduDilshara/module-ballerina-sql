@@ -185,16 +185,16 @@ public class StatementParameterProcessor extends AbstractStatementParameterProce
                 setVarchar(index, value.toString(), preparedStatement);
                 break;
             case Constants.SqlTypes.CHAR:
-                setChar(index, value.toString(), preparedStatement);
+                setChar(index, value, preparedStatement);
                 break;
             case Constants.SqlTypes.TEXT:
-                setText(index, value.toString(), preparedStatement);
+                setText(index, value, preparedStatement);
                 break;
             case Constants.SqlTypes.NCHAR:
-                setNChar(index, value.toString(), preparedStatement);
+                setNChar(index, value, preparedStatement);
                 break;
             case Constants.SqlTypes.NVARCHAR:
-                setNVarchar(index, value.toString(), preparedStatement);
+                setNVarchar(index, value, preparedStatement);
                 break;
             case Constants.SqlTypes.BIT:
                 setBit(index, value, preparedStatement, sqlType);
@@ -394,21 +394,21 @@ public class StatementParameterProcessor extends AbstractStatementParameterProce
         }
     }
 
-    private void setString(int index, String value, PreparedStatement preparedStatement)
+    private void setString(int index, Object value, PreparedStatement preparedStatement)
             throws SQLException {
         if (value == null) {
             preparedStatement.setString(index, null);
         } else {
-            preparedStatement.setString(index, value);
+            preparedStatement.setString(index, value.toString());
         }
     }
 
-    private void setNstring(int index, String value, PreparedStatement preparedStatement)
+    private void setNstring(int index, Object value, PreparedStatement preparedStatement)
             throws SQLException {
         if (value == null) {
             preparedStatement.setNString(index, null);
         } else {
-            preparedStatement.setNString(index, value);
+            preparedStatement.setNString(index, value.toString());
         }
     }
 
@@ -594,31 +594,31 @@ public class StatementParameterProcessor extends AbstractStatementParameterProce
     }
 
     @Override
-    protected void setVarchar(int index, String value, PreparedStatement preparedStatement)
+    protected void setVarchar(int index, Object value, PreparedStatement preparedStatement)
             throws SQLException {
         setString(index, value, preparedStatement);
     }
 
     @Override
-    protected void setText(int index, String value, PreparedStatement preparedStatement)
+    protected void setText(int index, Object value, PreparedStatement preparedStatement)
             throws SQLException {
         setString(index, value, preparedStatement);
     }
 
     @Override
-    protected void setChar(int index, String value, PreparedStatement preparedStatement)
+    protected void setChar(int index, Object value, PreparedStatement preparedStatement)
             throws SQLException {
         setString(index, value, preparedStatement);
     }
 
     @Override
-    protected void setNChar(int index, String value, PreparedStatement preparedStatement)
+    protected void setNChar(int index, Object value, PreparedStatement preparedStatement)
             throws SQLException {
         setNstring(index, value, preparedStatement);
     }
 
     @Override
-    protected void setNVarchar(int index, String value, PreparedStatement preparedStatement)
+    protected void setNVarchar(int index, Object value, PreparedStatement preparedStatement)
             throws SQLException {
         setNstring(index, value, preparedStatement);
     }
