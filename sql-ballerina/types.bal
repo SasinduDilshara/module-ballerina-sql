@@ -26,16 +26,16 @@ public type TypedValue object {
     anydata|object {}? value;
 };
 
-// # Represents a parameter for the SQL Client that allows SQL connector modules to extend to 
-// # create custom parameters that needs to be passed to the remote function.
-// #
-// # + value - Value of parameter passed into the SQL statement
-// public type CustomTypedValue object {
-//     public anydata|object {}? value;
-// };
+# Represents a parameter for the SQL Client that allows SQL connector modules to extend to 
+# create custom parameters that needs to be passed to the remote function.
+#
+# + value - Value of parameter passed into the SQL statement
+public type CustomTypedValue object {
+    public anydata|object {}? value;
+};
 
 # Possible type of parameters that can be passed into the SQL query.
-public type Value string|int|boolean|float|decimal|byte[]|xml|TypedValue?;
+public type Value string|int|boolean|float|decimal|byte[]|xml|TypedValue|CustomTypedValue?;
 
 # Represents Varchar SQL field.
 #
