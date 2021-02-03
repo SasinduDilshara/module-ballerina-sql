@@ -366,9 +366,11 @@ class ResultIterator {
         } else {
             record {}|Error? result;
             if(self.customResultIterator is CustomResultIterator){
+                io:println("Connector Specific record");
                 result = (<CustomResultIterator>self.customResultIterator).nextResult(self);
             }
             else{
+                io:println("sql Specific record");
                 result = nextResult(self);
             }
             if (result is record {}) {
@@ -400,9 +402,64 @@ class ResultIterator {
     }
 }
 
+public class ConnectorResultIterator {
+
+    isolated function nextResult(ResultIterator iterator) returns record {}|Error? = @java:Method {
+        'class: "org.ballerinalang.sql.utils.connector.CustomRecordIteratorUtils",
+        paramTypes: ["io.ballerina.runtime.api.values.BObject", "io.ballerina.runtime.api.values.BObject"]
+    } external; 
+    
+}
+
 public type CustomResultIterator object{
-    isolated function nextResult(ResultIterator iterator) returns record {}|Error?;
+     isolated function nextResult(ResultIterator iterator) returns record {}|Error?;
 };
+
+# Object that is used to return stored procedure call results.
+#
+# + executionResult - Summary of the execution of DML/DLL query
+# + queryResult - Results from SQL query
+public class ProcedureCallResult {
+    public ExecutionResult? executionResult = ();
+    public stream<record {}, Error>? queryResult = ();
+    public CustomProcedureCallResult? customProcedureCallResult;
+
+    public isolated function init(CustomProcedureCallResult? customProcedureCallResult = ()) {
+        self.customProcedureCallResult = customProcedureCallResult;
+    }
+
+    # Updates `executionResult` or `queryResult` with the next result in the result. This will also close the current
+    # results by default.
+    #
+    # + return - True if the next result is `queryResult`
+    public isolated function getNextQueryResult() returns boolean|Error {
+        if(self.customProcedureCallResult is CustomProcedureCallResult){
+            io:println("Connector Specific procedure");
+            return (<CustomProcedureCallResult>self.customProcedureCallResult).getNextQueryResult(self);
+        }
+        io:println("sql Specific procedure");
+        return getNextQueryResult(self);
+    }
+
+    # Closes the `ProcedureCallResult` object and releases resources.
+    #
+    # + return - `Error` if any error occurred while closing.
+    public isolated function close() returns Error? {
+        return closeCallResult(self);
+    }
+}
+
+public type CustomProcedureCallResult object{
+    public isolated function getNextQueryResult(ProcedureCallResult callResult) returns boolean|Error;
+};
+
+public class ConnectorProcedureCallResult {
+    public isolated function getNextQueryResult(ProcedureCallResult callResult) returns boolean|Error = @java:Method {
+    'class: "org.ballerinalang.sql.utils.connector.CustomProcedureResultUtils",
+    paramTypes: ["io.ballerina.runtime.api.values.BObject", "io.ballerina.runtime.api.values.BObject"]
+} external;
+
+}
 
 # Represents all OUT parameters used in SQL stored procedure call.
 public type OutParameter object {
@@ -762,39 +819,5 @@ public type ParameterizedCallQuery object {
     public Parameter[] insertions;
 };
 
-# Object that is used to return stored procedure call results.
-#
-# + executionResult - Summary of the execution of DML/DLL query
-# + queryResult - Results from SQL query
-public class ProcedureCallResult {
-    public ExecutionResult? executionResult = ();
-    public stream<record {}, Error>? queryResult = ();
-    public CustomProcedureCallResult? customProcedureCallResult;
 
-    public isolated function init(CustomProcedureCallResult? customProcedureCallResult = ()) {
-        self.customProcedureCallResult = customProcedureCallResult;
-    }
-
-    # Updates `executionResult` or `queryResult` with the next result in the result. This will also close the current
-    # results by default.
-    #
-    # + return - True if the next result is `queryResult`
-    public isolated function getNextQueryResult() returns boolean|Error {
-        if(self.customProcedureCallResult is CustomProcedureCallResult){
-            return (<CustomProcedureCallResult>self.customProcedureCallResult).getNextQueryResult(self);
-        }
-        return getNextQueryResult(self);
-    }
-
-    # Closes the `ProcedureCallResult` object and releases resources.
-    #
-    # + return - `Error` if any error occurred while closing.
-    public isolated function close() returns Error? {
-        return closeCallResult(self);
-    }
-}
-
-public type CustomProcedureCallResult object{
-    isolated function getNextQueryResult(ProcedureCallResult callResult) returns boolean|Error;
-};
 

@@ -70,6 +70,10 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
     private static final Object lock = new Object();
     private static volatile ResultParameterProcessor instance;
 
+    private static final Object lock2 = new Object();
+    private static volatile BObject iteratorObject;
+    private static volatile BObject procedureCallObject;
+
     private static final ArrayType stringArrayType = TypeCreator.createArrayType(PredefinedTypes.TYPE_STRING);
     private static final ArrayType booleanArrayType = TypeCreator.createArrayType(PredefinedTypes.TYPE_BOOLEAN);
     private static final ArrayType intArrayType = TypeCreator.createArrayType(PredefinedTypes.TYPE_INT);
@@ -729,7 +733,15 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
     }
 
     protected BObject getIteratorObject() {
-        return null;
+        if (iteratorObject == null) {
+            synchronized (lock2) {
+                if (iteratorObject == null) {
+                    iteratorObject = ValueCreator.createObjectValue(
+                            ModuleUtils.getModule(), "ConnectorResultIterator", new Object[0]);
+                }
+            }
+        }
+        return iteratorObject;
     }
 
     public BObject createRecordIterator(ResultSet resultSet,
@@ -753,7 +765,15 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
     }
 
     public BObject getCustomProcedureCallObject() {
-        return null;
+        if (procedureCallObject == null) {
+            synchronized (lock2) {
+                if (procedureCallObject == null) {
+                    procedureCallObject = ValueCreator.createObjectValue(
+                            ModuleUtils.getModule(), "ConnectorProcedureCallResult");
+                }
+            }
+        }
+        return procedureCallObject;
     }
 
 
