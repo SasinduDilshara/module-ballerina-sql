@@ -68,13 +68,12 @@ import static org.ballerinalang.sql.utils.Utils.updateProcedureCallExecutionResu
  * @since 0.5.6
  */
 public class CallProcessor {
+
+    private CallProcessor() {
+    }
+
     private static final Calendar calendar = Calendar
             .getInstance(TimeZone.getTimeZone(Constants.TIMEZONE_UTC.getValue()));
-
-    public static Object nativeCall(BObject client, Object paramSQLString, BArray recordTypes) {
-        return nativeCall(client, paramSQLString, recordTypes, DefaultStatementParameterProcessor.getInstance(),
-            DefaultResultParameterProcessor.getInstance());
-    }
 
     public static Object nativeCall(BObject client, Object paramSQLString, BArray recordTypes, 
             DefaultStatementParameterProcessor statementParameterProcessor, 
