@@ -7,6 +7,13 @@ version = "@toml.version@"
 path = "../sql-native/build/libs/sql-native-@project.version@.jar"
 groupId = "ballerina"
 artifactId = "sql-native"
+version = "0.6.0-alpha4-SNAPSHOT"
+
+[[platform.java11.dependency]]
+path = "../sql-test-utils/build/libs/sql-test-utils-@project.version@.jar"
+groupId = "org.ballerinalang"
+scope = "testOnly"
+artifactId = "sql"
 version = "@project.version@"
 
 [[platform.java11.dependency]]
