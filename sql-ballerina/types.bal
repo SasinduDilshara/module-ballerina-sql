@@ -32,7 +32,7 @@ public type Value string|int|boolean|float|decimal|byte[]|xml|TypedValue?;
 # Represents Varchar SQL field.
 #
 public class VarcharValue {
-    public string? value;
+    string? value;
 
     public isolated function init(string? value = ()) {
         self.value = value;
@@ -342,74 +342,6 @@ public const EXECUTION_FAILED = -3;
 public type ExecutionResult record {
     int? affectedRowCount;
     string|int? lastInsertId;
-};
-
-# The result iterator object that is used to iterate through the results in the event stream.
-# 
-# + customResultIterator - The instance of the custom ballerina class that is structurally equivalent to
-#                          CustomResultIterator object type. This instance includes a custom implementation
-#                          of the nextResult method. 
-# + err - Used to hold any error to be returned 
-# + isClosed - The boolean flag used to indicate that the result iterator is closed 
-class ResultIterator {
-    private boolean isClosed = false;
-    private Error? err;
-    public CustomResultIterator? customResultIterator;
-
-    public isolated function init(Error? err = (), CustomResultIterator? customResultIterator = ()) {
-        self.err = err;
-        self.customResultIterator = customResultIterator;
-    }
-
-    public isolated function next() returns record {|record {} value;|}|Error? {
-        if (self.isClosed) {
-            return closedStreamInvocationError();
-        }
-        error? closeErrorIgnored = ();
-        if (self.err is Error) {
-            return self.err;
-        } else {
-            record {}|Error? result;
-            if (self.customResultIterator is CustomResultIterator) {
-                result = (<CustomResultIterator>self.customResultIterator).nextResult(self);
-            }
-            else {
-                result = nextResult(self);
-            }
-            if (result is record {}) {
-                record {|
-                    record {} value;
-                |} streamRecord = {value: result};
-                return streamRecord;
-            } else if (result is Error) {
-                self.err = result;
-                closeErrorIgnored = self.close();
-                return self.err;
-            } else {
-                closeErrorIgnored = self.close();
-                return result;
-            }
-        }
-    }
-
-    public isolated function close() returns Error? {
-        if (!self.isClosed) {
-            if (self.err is ()) {
-                Error? e = closeResult(self);
-                if (e is ()) {
-                    self.isClosed = true;
-                }
-                return e;
-            }
-        }
-    }
-}
-
-# The custom result iterator object type that is used as a structure to define custom
-# result iterator classes in connector modules
-# 
-public type CustomResultIterator object {
-    isolated function nextResult(ResultIterator iterator) returns record {}|Error?;
 };
 
 # Represents all OUT parameters used in SQL stored procedure call.
@@ -770,18 +702,81 @@ public type ParameterizedCallQuery object {
     public Parameter[] insertions;
 };
 
+# The result iterator object that is used to iterate through the results in the event stream.
+# 
+# + customResultIterator - The instance of the custom ballerina class that is structurally equivalent to
+#                          CustomResultIterator object type. This instance includes a custom implementation
+#                          of the nextResult method. 
+# + err - Used to hold any error to be returned 
+# + isClosed - The boolean flag used to indicate that the result iterator is closed 
+class ResultIterator {
+    private boolean isClosed = false;
+    private Error? err;
+    public CustomResultIterator? customResultIterator;
+
+    public isolated function init(Error? err = (), CustomResultIterator? customResultIterator = ()) {
+        self.err = err;
+        self.customResultIterator = customResultIterator;
+    }
+
+    public isolated function next() returns record {|record {} value;|}|Error? {
+        if (self.isClosed) {
+            return closedStreamInvocationError();
+        }
+        error? closeErrorIgnored = ();
+        if (self.err is Error) {
+            return self.err;
+        } else {
+            record {}|Error? result;
+            if (self.customResultIterator is CustomResultIterator) {
+                result = (<CustomResultIterator>self.customResultIterator).nextResult(self);
+            }
+            else {
+                result = nextResult(self);
+            }
+            if (result is record {}) {
+                record {|
+                    record {} value;
+                |} streamRecord = {value: result};
+                return streamRecord;
+            } else if (result is Error) {
+                self.err = result;
+                closeErrorIgnored = self.close();
+                return self.err;
+            } else {
+                closeErrorIgnored = self.close();
+                return result;
+            }
+        }
+    }
+
+    public isolated function close() returns Error? {
+        if (!self.isClosed) {
+            if (self.err is ()) {
+                Error? e = closeResult(self);
+                if (e is ()) {
+                    self.isClosed = true;
+                }
+                return e;
+            }
+        }
+    }
+}
+
 # Object that is used to return stored procedure call results.
 #
 # + executionResult - Summary of the execution of DML/DLL query
 # + queryResult - Results from SQL query
-# + customProcedureCallResult - custom procedure call result object type instance
+# + customResultIterator - The instance of the custom ballerina class that is structurally equivalent to
+#                          CustomResultIterator object type. This instance includes a custom implementation
+#                          of the getNextQueryResult method.
 public class ProcedureCallResult {
     public ExecutionResult? executionResult = ();
     public stream<record {}, Error>? queryResult = ();
-    public CustomProcedureCallResult? customProcedureCallResult;
+    public CustomResultIterator? customResultIterator;
 
-    public isolated function init(CustomProcedureCallResult? customProcedureCallResult = ()) {
-        self.customProcedureCallResult = customProcedureCallResult;
+    public isolated function init(CustomResultIterator? customResultIterator = ()) {
+        self.customResultIterator = customResultIterator;
     }
 
     # Updates `executionResult` or `queryResult` with the next result in the result. This will also close the current
@@ -789,8 +784,8 @@ public class ProcedureCallResult {
     #
     # + return - True if the next result is `queryResult`
     public isolated function getNextQueryResult() returns boolean|Error {
-        if (self.customProcedureCallResult is CustomProcedureCallResult) {
-            return (<CustomProcedureCallResult>self.customProcedureCallResult).getNextQueryResult(self);
+        if (self.customResultIterator is CustomResultIterator) {
+            return (<CustomResultIterator>self.customResultIterator).getNextQueryResult(self);
         }
         return getNextQueryResult(self);
     }
@@ -803,9 +798,10 @@ public class ProcedureCallResult {
     }
 }
 
-# The custom result procesureCallResult object type that is used as a structure to define custom
-# procesureCallResult classes in connector modules
+# The object type that is used as a structure to define a custom class with custom
+# implementations for nextResult and getNextQueryResult in the connector modules.
 # 
-public type CustomProcedureCallResult object {
+public type CustomResultIterator object {
+    isolated function nextResult(ResultIterator iterator) returns record {}|Error?;
     isolated function getNextQueryResult(ProcedureCallResult callResult) returns boolean|Error;
 };
