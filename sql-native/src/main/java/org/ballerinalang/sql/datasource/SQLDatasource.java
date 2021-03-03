@@ -160,16 +160,13 @@ public class SQLDatasource {
             throws SQLException {
         Connection conn;
         try {
-            boolean isInTransaction = trxResourceManager.isInTransaction();
-            if (!isInTransaction) {
-                conn = datasource.getConnection();
-                return conn;
+            if (!trxResourceManager.isInTransaction()) {
+                return datasource.getConnection();
             } else {
                 //This is when there is an infected transaction block. But this is not participated to the transaction
                 //since the action call is outside of the transaction block.
                 if (!trxResourceManager.getCurrentTransactionContext().hasTransactionBlock()) {
-                    conn = datasource.getConnection();
-                    return conn;
+                    return datasource.getConnection();
                 }
             }
             String connectorId = (String) client.getNativeData(Constants.SQL_CONNECTOR_TRANSACTION_ID);
@@ -334,7 +331,7 @@ public class SQLDatasource {
                 }
 
                 Object connLifeTimeSec = sqlDatasourceParams.connectionPool
-                        .get(Constants.ConnectionPool.MAX_CONNECTION_LIFE_TIME_SECONDS);
+                        .get(Constants.ConnectionPool.MAX_CONNECTION_LIFE_TIME);
                 if (connLifeTimeSec instanceof BDecimal) {
                     BDecimal connLifeTime = (BDecimal) connLifeTimeSec;
                     if (connLifeTime.floatValue() > 0) {
@@ -391,7 +388,7 @@ public class SQLDatasource {
                 }
 
                 Object connLifeTimeSec = sqlDatasourceParams.connectionPool
-                        .get(Constants.ConnectionPool.MAX_CONNECTION_LIFE_TIME_SECONDS);
+                        .get(Constants.ConnectionPool.MAX_CONNECTION_LIFE_TIME);
                 if (connLifeTimeSec instanceof BDecimal) {
                     BDecimal connLifeTime = (BDecimal) connLifeTimeSec;
                     if (connLifeTime.floatValue() > 0) {
