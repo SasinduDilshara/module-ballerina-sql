@@ -196,9 +196,11 @@ public class RecordIteratorUtils {
                 return resultParameterProcessor.convertBoolean(boolValue, sqlType, ballerinaType, resultSet.wasNull());
             case Types.REF:
             case Types.STRUCT:
+                System.out.println("The type is struct");
                 Struct structData = (Struct) resultSet.getObject(columnIndex);
                 return resultParameterProcessor.convertStruct(structData, sqlType, ballerinaType);
             case Types.SQLXML:
+                System.out.println("The type is xml");
                 SQLXML sqlxml = resultSet.getSQLXML(columnIndex);
                 return resultParameterProcessor.convertXml(sqlxml, sqlType, ballerinaType);
             default:

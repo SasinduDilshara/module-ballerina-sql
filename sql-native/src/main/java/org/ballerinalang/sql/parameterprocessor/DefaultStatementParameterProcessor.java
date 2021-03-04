@@ -390,6 +390,9 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
                         objectValue.getType().getQualifiedName() + " in column index: " + index);
             }
         } else if (object instanceof BXml) {
+            System.out.println("\nobject instanceof BXml:- "+object+":- "+object.toString());
+            System.out.println("\nobject instanceof BXml:- "+((BXml) object).getTextValue()+":- "+object.toString());
+            System.out.println("\nobject instanceof BXml:- "+((BXml) object)+":- "+object.toString());
             preparedStatement.setObject(index, ((BXml) object).getTextValue(), Types.SQLXML);
             return Types.SQLXML;
         } else {
