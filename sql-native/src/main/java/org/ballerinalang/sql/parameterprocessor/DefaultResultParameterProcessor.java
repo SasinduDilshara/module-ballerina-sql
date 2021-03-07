@@ -706,8 +706,8 @@ public class DefaultResultParameterProcessor extends AbstractResultParameterProc
                 "Out parameter of index '" + paramIndex + "'.");
     }
 
-    @Override
-    public Object getCustomOutParameters(Object value, int sqlType, Type ballerinaType) {
+    // @Override
+    public Object getCustomOutParameters(BObject value, int sqlType, Type ballerinaType) {
         return ErrorGenerator.getSQLApplicationError("Unsupported SQL type " + sqlType);
     }
 

@@ -66,6 +66,9 @@ public class OutParameterProcessor {
         Object value = result.getNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA);
 
         Type ballerinaType = typeDesc.getDescribingType();
+        System.out.println("sqlType "+ sqlType);
+        System.out.println("value "+ value);
+        System.out.println("ballerinaType sql "+ ballerinaType);        
         try {
             switch (sqlType) {
                 case Types.CHAR:
@@ -149,7 +152,7 @@ public class OutParameterProcessor {
                 case Types.SQLXML:
                     return resultParameterProcessor.convertXml((SQLXML) value, sqlType, ballerinaType);
                 default:
-                    return resultParameterProcessor.getCustomOutParameters(value, sqlType, ballerinaType);
+                    return resultParameterProcessor.getCustomOutParameters(result, sqlType, ballerinaType);
             }
         } catch (ApplicationError | IOException applicationError) {
             return ErrorGenerator.getSQLApplicationError(applicationError.getMessage());

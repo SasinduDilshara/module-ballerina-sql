@@ -220,6 +220,7 @@ public class CallProcessor {
             int sqlType = entry.getValue();
 
             BObject parameter = (BObject) arrayValue.get(paramIndex - 1);
+            System.out.println("Parameter type:- "+parameter.getType().getName());
             parameter.addNativeData(Constants.ParameterObject.SQL_TYPE_NATIVE_DATA, sqlType);
 
             switch (sqlType) {

@@ -703,7 +703,7 @@ public class XMLOutParameter {
 
 # Represents SQL InOutParameter used in procedure calls.
 public class InOutParameter {
-    Value 'in;
+    public Value 'in;
 
     public isolated function init(Value 'in) {
         self.'in = 'in;
