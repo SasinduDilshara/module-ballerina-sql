@@ -63,20 +63,27 @@ public class ProcedureCallResultUtils {
         ResultSet resultSet;
         try {
             boolean moreResults = statement.getMoreResults();
+            System.out.println("moreResults "+moreResults);
+            System.out.println("isClosed():-1 "+statement.isClosed());
             if (moreResults) {
                 List<ColumnDefinition> columnDefinitions;
                 StructureType streamConstraint;
                 resultSet = statement.getResultSet();
+                System.out.println("resultSet "+resultSet);
                 int totalRecordDescriptions = (int) procedureCallResult
                         .getNativeData(RESULT_SET_TOTAL_NATIVE_DATA_FIELD);
+                System.out.println("isClosed():-2 "+statement.isClosed());
                 if (totalRecordDescriptions == 0) {
+                    System.out.println("isClosed():-3 "+statement.isClosed());
                     columnDefinitions = getColumnDefinitions(resultSet, null);
                     streamConstraint = getDefaultRecordType(columnDefinitions);
                 } else {
+                    System.out.println("isClosed():-4 "+statement.isClosed());
                     Object[] recordDescriptions = (Object[]) procedureCallResult
                             .getNativeData(TYPE_DESCRIPTIONS_NATIVE_DATA_FIELD);
                     int recordDescription = (int) procedureCallResult.getNativeData(RESULT_SET_COUNT_NATIVE_DATA_FIELD);
                     if (recordDescription <= totalRecordDescriptions) {
+                        System.out.println("isClosed():-5 "+statement.isClosed());
                         streamConstraint = (StructureType)
                                 ((BTypedesc) recordDescriptions[recordDescription]).getDescribingType();
                         columnDefinitions = getColumnDefinitions(resultSet, streamConstraint);
@@ -86,6 +93,7 @@ public class ProcedureCallResultUtils {
                                 "returned result sets count.");
                     }
                 }
+                System.out.println("isClosed():-6 "+statement.isClosed());
                 BStream streamValue = ValueCreator.createStreamValue(
                         TypeCreator.createStreamType(streamConstraint),
                         resultParameterProcessor.createRecordIterator(resultSet, null, null,

@@ -332,6 +332,7 @@ public class Utils {
 
     public static void updateProcedureCallExecutionResult(CallableStatement statement, BObject procedureCallResult)
             throws SQLException {
+        System.out.println("updateProcedureCallExecutionResult "+"updateProcedureCallExecutionResult");
         Object lastInsertedId = null;
         int count = statement.getUpdateCount();
         ResultSet resultSet = statement.getGeneratedKeys();
@@ -375,7 +376,9 @@ public class Utils {
             throws SQLException, ApplicationError {
         List<ColumnDefinition> columnDefs = new ArrayList<>();
         Set<String> columnNames = new HashSet<>();
+        System.out.println("BcolumnNames");
         ResultSetMetaData rsMetaData = resultSet.getMetaData();
+        System.out.println("AcolumnNames");
         int cols = rsMetaData.getColumnCount();
         for (int i = 1; i <= cols; i++) {
             String colName = rsMetaData.getColumnLabel(i);

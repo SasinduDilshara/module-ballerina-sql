@@ -812,6 +812,7 @@ public class ProcedureCallResult {
     #
     # + return - True if the next result is `queryResult`
     public isolated function getNextQueryResult() returns boolean|Error {
+        io:println("sql types.bal getNextQueryResult ",<CustomResultIterator>self.customResultIterator);
         if (self.customResultIterator is CustomResultIterator) {
             return (<CustomResultIterator>self.customResultIterator).getNextQueryResult(self);
         }

@@ -126,26 +126,46 @@ public class CallProcessor {
                     List<ColumnDefinition> columnDefinitions;
                     StructureType streamConstraint;
                     resultSet = statement.getResultSet();
+                    System.out.println("BaaB1");
+                    resultSet.getMetaData();
+                    // System.out.println("BaaB11");                    
+                    // System.out.println("\nresultSet\n"+resultSet+"\n");
+                    // System.out.println("\recordTypes.size()\n"+recordTypes.size()+"\n");
+                    // System.out.println("\nstategetColumnDefinitionsment.getMoreResults()\n"+statement.getMoreResults()+"\n");
                     if (recordTypes.size() == 0) {
                         columnDefinitions = getColumnDefinitions(resultSet, null);
+                        System.out.println("1");
                         streamConstraint = getDefaultRecordType(columnDefinitions);
+                        System.out.println("2");
                     } else {
                         streamConstraint = (StructureType) ((BTypedesc) recordDescriptions[0]).getDescribingType();
+                        System.out.println("3");
                         columnDefinitions = getColumnDefinitions(resultSet, streamConstraint);
+                        System.out.println("4");
                         resultSetCount++;
+                        System.out.println("5");
                     }
                     BStream streamValue = ValueCreator.createStreamValue(TypeCreator.createStreamType(streamConstraint),
                         resultParameterProcessor.createRecordIterator(resultSet, null, null, columnDefinitions,
                                                      streamConstraint));
+                    System.out.println("6");
                     procedureCallResult.set(QUERY_RESULT_FIELD, streamValue);
+                    System.out.println("7");
                 } else {
+                    System.out.println("8");
                     updateProcedureCallExecutionResult(statement, procedureCallResult);
+                    System.out.println("9");
                 }
                 procedureCallResult.addNativeData(STATEMENT_NATIVE_DATA_FIELD, statement);
+                System.out.println("10");
                 procedureCallResult.addNativeData(CONNECTION_NATIVE_DATA_FIELD, connection);
+                System.out.println("11");
                 procedureCallResult.addNativeData(TYPE_DESCRIPTIONS_NATIVE_DATA_FIELD, recordDescriptions);
+                System.out.println("12");
                 procedureCallResult.addNativeData(RESULT_SET_TOTAL_NATIVE_DATA_FIELD, recordTypes.size());
+                System.out.println("13");
                 procedureCallResult.addNativeData(RESULT_SET_COUNT_NATIVE_DATA_FIELD, resultSetCount);
+                System.out.println("14");
                 return procedureCallResult;
             } catch (SQLException e) {
                 return ErrorGenerator.getSQLDatabaseError(e, "Error while executing SQL query: " + sqlQuery + ". ");

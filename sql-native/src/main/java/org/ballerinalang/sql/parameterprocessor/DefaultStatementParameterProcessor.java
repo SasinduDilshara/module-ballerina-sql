@@ -85,7 +85,9 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
     private int getSQLType(BObject typedValue) throws ApplicationError {
         String sqlType = typedValue.getType().getName();
         int sqlTypeValue;
+        System.out.println("sqlType: "+sqlType);
         switch (sqlType) {
+            
             case Constants.SqlTypes.VARCHAR:
             case Constants.SqlTypes.TEXT:
                 sqlTypeValue = Types.VARCHAR;
@@ -118,15 +120,19 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
                 sqlTypeValue = Types.FLOAT;
                 break;
             case Constants.SqlTypes.REAL:
+                System.out.println("sqlType: "+sqlType+"Real");
                 sqlTypeValue = Types.REAL;
                 break;
             case Constants.SqlTypes.DOUBLE:
+                System.out.println("sqlType: "+sqlType+"DOUBLE");
                 sqlTypeValue = Types.DOUBLE;
                 break;
             case Constants.SqlTypes.NUMERIC:
+                System.out.println("sqlType: "+sqlType+"NUMERIC");
                 sqlTypeValue = Types.NUMERIC;
                 break;
             case Constants.SqlTypes.DECIMAL:
+                System.out.println("sqlType: "+sqlType+"DECIMAL");
                 sqlTypeValue = Types.DECIMAL;
                 break;
             case Constants.SqlTypes.BINARY:
@@ -185,7 +191,7 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         Object value = typedValue.get(Constants.TypedValueFields.VALUE);
         switch (sqlType) {
             case Constants.SqlTypes.VARCHAR:
-                setVarchar(preparedStatement, index, value.toString());
+                setVarchar(preparedStatement, index, value);
                 break;
             case Constants.SqlTypes.CHAR:
                 setChar(preparedStatement, index, value);
@@ -366,7 +372,12 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
             preparedStatement.setBigDecimal(index, ((BDecimal) object).decimalValue());
             return Types.NUMERIC;
         } else if (object instanceof Boolean) {
-            preparedStatement.setBoolean(index, (Boolean) object);
+            if(object == null){
+                preparedStatement.setNull(index, Types.BOOLEAN);
+            }
+            else {
+                preparedStatement.setBoolean(index, (Boolean) object);
+            }
             return Types.BOOLEAN;
         } else if (object instanceof BArray) {
             BArray objectArray = (BArray) object;
@@ -402,8 +413,14 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
 
     private void setString(PreparedStatement preparedStatement, int index, Object value)
             throws SQLException {
+        setString(preparedStatement, index, value, Types.VARCHAR);
+    }
+
+    private void setString(PreparedStatement preparedStatement, int index, Object value, int typeInt)
+            throws SQLException {
         if (value == null) {
-            preparedStatement.setString(index, null);
+            System.out.println("typeInt "+typeInt);
+            preparedStatement.setNull(index, typeInt);
         } else {
             preparedStatement.setString(index, value.toString());
         }
@@ -440,9 +457,14 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
     }
 
     private void setFloatAndReal(PreparedStatement preparedStatement, String sqlType, int index, Object value)
+    throws SQLException, ApplicationError {
+        setFloatAndReal(preparedStatement, sqlType, index, value, Types.FLOAT);
+    }
+
+    private void setFloatAndReal(PreparedStatement preparedStatement, String sqlType, int index, Object value, int typeInt)
             throws SQLException, ApplicationError {
         if (value == null) {
-            preparedStatement.setNull(index, Types.FLOAT);
+            preparedStatement.setNull(index, typeInt);
         } else if (value instanceof Double || value instanceof Long ||
                 value instanceof Float || value instanceof Integer) {
             preparedStatement.setFloat(index, ((Number) value).floatValue());
@@ -454,9 +476,13 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
     }
 
     private void setNumericAndDecimal(PreparedStatement preparedStatement, String sqlType, int index, Object value)
+    throws SQLException, ApplicationError {
+        setNumericAndDecimal(preparedStatement, sqlType, index, value, Types.DECIMAL);
+    }
+    private void setNumericAndDecimal(PreparedStatement preparedStatement, String sqlType, int index, Object value, int typeInt)
             throws SQLException, ApplicationError {
         if (value == null) {
-            preparedStatement.setNull(index, Types.DECIMAL);
+            preparedStatement.setNull(index, typeInt);
         } else if (value instanceof Double || value instanceof Long) {
             preparedStatement.setBigDecimal(index, new BigDecimal(((Number) value).doubleValue(),
                     MathContext.DECIMAL64));
@@ -602,19 +628,19 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
     @Override
     protected void setVarchar(PreparedStatement preparedStatement, int index, Object value)
             throws SQLException {
-        setString(preparedStatement, index, value);
+        setString(preparedStatement, index, value, Types.VARCHAR);
     }
 
     @Override
     protected void setText(PreparedStatement preparedStatement, int index, Object value)
             throws SQLException {
-        setString(preparedStatement, index, value);
+        setString(preparedStatement, index, value, Types.VARCHAR);
     }
 
     @Override
     protected void setChar(PreparedStatement preparedStatement, int index, Object value)
             throws SQLException {
-        setString(preparedStatement, index, value);
+        setString(preparedStatement, index, value, Types.CHAR);
     }
 
     @Override
@@ -680,13 +706,13 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
     @Override
     protected void setFloat(PreparedStatement preparedStatement, String sqlType, int index, Object value)
             throws SQLException, ApplicationError {
-        setFloatAndReal(preparedStatement, sqlType, index, value);
+        setFloatAndReal(preparedStatement, sqlType, index, value, Types.FLOAT);
     }
 
     @Override
     protected void setReal(PreparedStatement preparedStatement, String sqlType, int index, Object value)
             throws SQLException, ApplicationError {
-        setFloatAndReal(preparedStatement, sqlType, index, value);
+        setFloatAndReal(preparedStatement, sqlType, index, value, Types.REAL);
     }
 
     @Override
@@ -707,13 +733,13 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
     @Override
     protected void setNumeric(PreparedStatement preparedStatement, String sqlType, int index, Object value)
             throws SQLException, ApplicationError {
-        setNumericAndDecimal(preparedStatement, sqlType, index, value);
+        setNumericAndDecimal(preparedStatement, sqlType, index, value, Types.NUMERIC);
     }
 
     @Override
     protected void setDecimal(PreparedStatement preparedStatement, String sqlType, int index, Object value)
             throws SQLException, ApplicationError {
-        setNumericAndDecimal(preparedStatement, sqlType, index, value);
+        setNumericAndDecimal(preparedStatement, sqlType, index, value, Types.DECIMAL);
     }
 
     @Override
