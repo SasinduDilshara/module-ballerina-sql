@@ -1,20 +1,20 @@
 [package]
 org = "ballerina"
 name = "sql"
-version = "@toml.version@"
+version = "0.6.0-alpha5"
 
 [[platform.java11.dependency]]
-path = "../sql-native/build/libs/sql-native-@project.version@.jar"
+path = "../sql-native/build/libs/sql-native-0.6.0-alpha5.jar"
 groupId = "ballerina"
 artifactId = "sql-native"
-version = "@project.version@"
+version = "0.6.0-alpha5"
 
 [[platform.java11.dependency]]
-path = "../sql-test-utils/build/libs/sql-test-utils-@project.version@.jar"
+path = "../sql-test-utils/build/libs/sql-test-utils-0.6.0-alpha5.jar"
 groupId = "org.ballerinalang"
 scope = "testOnly"
 artifactId = "sql"
-version = "@project.version@"
+version = "0.6.0-alpha5"
 
 [[platform.java11.dependency]]
 path = "./lib/HikariCP-3.3.1.jar"

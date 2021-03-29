@@ -103,6 +103,8 @@ public class RecordIteratorUtils {
             throws SQLException, ApplicationError, IOException {
         int sqlType = columnDefinition.getSqlType();
         Type ballerinaType = columnDefinition.getBallerinaType();
+
+        System.out.println("VOut Parameter Get Value:- sqlType " + sqlType + " Value :- " + ballerinaType.getName());
         switch (sqlType) {
             case Types.ARRAY:
                 return resultParameterProcessor.convertArray(resultSet.getArray(columnIndex), sqlType, ballerinaType);
@@ -196,8 +198,10 @@ public class RecordIteratorUtils {
                 return resultParameterProcessor.convertBoolean(boolValue, sqlType, ballerinaType, resultSet.wasNull());
             case Types.REF:
             case Types.STRUCT:
-                Struct structData = (Struct) resultSet.getObject(columnIndex);
-                return resultParameterProcessor.convertStruct(structData, sqlType, ballerinaType);
+                System.out.println("Before Struct ");
+                Object structObject = resultSet.getObject(columnIndex);
+                System.out.println("After Struct ");
+                return resultParameterProcessor.convertStruct(structObject, sqlType, ballerinaType);
             case Types.SQLXML:
                 SQLXML sqlxml = resultSet.getSQLXML(columnIndex);
                 return resultParameterProcessor.convertXml(sqlxml, sqlType, ballerinaType);

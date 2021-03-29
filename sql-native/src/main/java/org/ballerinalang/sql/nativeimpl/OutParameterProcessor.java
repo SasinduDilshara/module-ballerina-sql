@@ -63,6 +63,7 @@ public class OutParameterProcessor {
         Object value = result.getNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA);
 
         Type ballerinaType = typeDesc.getDescribingType();
+        System.out.println("VOut Parameter Get Value:- sqlType" + sqlType + "Value :- " + value.toString());
         try {
             switch (sqlType) {
                 case Types.CHAR:
@@ -135,7 +136,7 @@ public class OutParameterProcessor {
                     return resultParameterProcessor.convertBoolean((boolean) value, sqlType, ballerinaType, false);
                 case Types.REF:
                 case Types.STRUCT:
-                    return resultParameterProcessor.convertStruct((Struct) value, sqlType, ballerinaType);
+                    return resultParameterProcessor.convertStruct(value, sqlType, ballerinaType);
                 case Types.SQLXML:
                     return resultParameterProcessor.convertXml((SQLXML) value, sqlType, ballerinaType);
                 default:

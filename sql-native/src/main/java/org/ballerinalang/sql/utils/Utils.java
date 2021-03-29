@@ -404,6 +404,7 @@ public class Utils {
                     ballerinaFieldName = field.getKey();
                     ballerinaType = validFieldConstraint(sqlType, field.getValue().getFieldType());
                     if (ballerinaType == null) {
+                        System.out.println("generateColumnDefinition sqlType " + sqlType + "sqlTypeName " + sqlTypeName);
                         throw new ApplicationError(
                                 field.getValue().getFieldType().getName() + " cannot be mapped to SQL type '"
                                         + sqlTypeName + "'");

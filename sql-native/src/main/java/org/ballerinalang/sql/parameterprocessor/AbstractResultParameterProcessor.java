@@ -85,7 +85,7 @@ public abstract class AbstractResultParameterProcessor {
 
     public abstract Object convertBinary(Object value, int sqlType, Type ballerinaType) throws ApplicationError; 
 
-    protected abstract Object convertStruct(Struct value, int sqlType, Type type) throws ApplicationError;
+    protected abstract Object convertStruct(Object value, int sqlType, Type type) throws ApplicationError;
 
     protected abstract Object convertXml(SQLXML value, int sqlType, Type type) throws ApplicationError, SQLException;
 

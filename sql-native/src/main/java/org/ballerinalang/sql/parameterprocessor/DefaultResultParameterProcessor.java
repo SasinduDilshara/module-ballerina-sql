@@ -439,11 +439,12 @@ public class DefaultResultParameterProcessor extends AbstractResultParameterProc
     }
 
     @Override
-    public Object convertStruct(Struct value, int sqlType, Type type) throws ApplicationError {
+    public Object convertStruct(Object value, int sqlType, Type type) throws ApplicationError {
         Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL Struct");
         if (value != null) {
+            Struct structData = (Struct) value;
             if (type instanceof RecordType) {
-                return createUserDefinedType(value, (RecordType) type);
+                return createUserDefinedType(structData, (RecordType) type);
             } else {
                 throw new ApplicationError("The ballerina type that can be used for SQL struct should be record type," +
                         " but found " + type.getName() + " .");
