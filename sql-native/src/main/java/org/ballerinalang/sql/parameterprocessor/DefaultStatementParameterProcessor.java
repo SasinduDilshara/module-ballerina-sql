@@ -304,9 +304,33 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
                 return getBooleanArrayData(value);
             case TypeTags.ARRAY_TAG:
                 return getNestedArrayData(value);
+            case TypeTags.OBJECT_TYPE_TAG:
+                if (elementType.getName().equals("DecimalValue")) {
+                    return getDecimalValueArrayData(value);
+                } else {
+                    return new Object[]{null, null};
+                }
             default:
                 return getCustomArrayData(value);
         }
+    }
+
+    protected Object[] getDecimalValueArrayData(Object value) throws ApplicationError {
+        BObject objectValue;
+        int arrayLength = ((BArray) value).size();
+        String sqlType;
+        Object innerValue;
+        Object[] arrayData = new BigDecimal[arrayLength];
+        for (int i = 0; i < arrayLength; i++) {
+            objectValue = (BObject) ((BArray) value).get(i);
+            innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
+            if (innerValue instanceof BDecimal) {
+                arrayData[i] = ((BDecimal) innerValue).decimalValue();
+            } else {
+                arrayData[i] = new BigDecimal(((Number) value).doubleValue(), MathContext.DECIMAL32);
+            }
+        }
+        return new Object[]{arrayData, "DECIMAL"};
     }
 
     private Object[] getStructData(Connection conn, Object value) throws SQLException, ApplicationError {
