@@ -473,8 +473,8 @@ function insertIntoArrayTable3() {
 
     ParameterizedQuery sqlQuery =
         `INSERT INTO ArrayTypes2 (row_id, int_array, long_array, float_array, double_array, decimal_array, boolean_array,
-         string_array, blob_array, smallint_array, numeric_array, real_array, char_array, nchar_array, varchar_array, nvarchar_array) VALUES(${rowId}, ${paraInt}, ${paraLong}, ${paraFloat}, ${paraDouble}, ${paraDecimal},
-         ${paraBool}, ${paraString}, ${paraBlob}, ${paraSmallint}, ${paraNumeric}, ${paraReal}, ${paraChar}, ${paraNChar}, ${paraVarchar}, ${paraNVarchar})`;
+         string_array, blob_array, smallint_array, numeric_array, real_array, char_array, varchar_array, nvarchar_array) VALUES(${rowId}, ${paraInt}, ${paraLong}, ${paraFloat}, ${paraDouble}, ${paraDecimal},
+         ${paraBool}, ${paraString}, ${paraBlob}, ${paraSmallint}, ${paraNumeric}, ${paraReal}, ${paraChar}, ${paraVarchar}, ${paraNVarchar})`;
     validateResult(executeQueryMockClient(sqlQuery), 1);
 
     MockClient dbClient = checkpanic new (url = executeParamsDb, user = user, password = password);
