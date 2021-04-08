@@ -305,32 +305,187 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
             case TypeTags.ARRAY_TAG:
                 return getNestedArrayData(value);
             case TypeTags.OBJECT_TYPE_TAG:
-                if (elementType.getName().equals("DecimalValue")) {
+                if (elementType.getName().equals(Constants.SqlTypes.DECIMAL)) {
                     return getDecimalValueArrayData(value);
+                } else if (elementType.getName().equals(Constants.SqlTypes.REAL)) {
+                    return getRealValueArrayData(value);
+                } else if (elementType.getName().equals(Constants.SqlTypes.SMALLINT)) {
+                    return getSmallIntValueArrayData(value);
+                } else if (elementType.getName().equals(Constants.SqlTypes.INTEGER)) {
+                    return getIntValueArrayData(value);
+                } else if (elementType.getName().equals(Constants.SqlTypes.BIGINT)) {
+                    return getBigIntValueArrayData(value);
+                } else if (elementType.getName().equals(Constants.SqlTypes.NUMERIC)) {
+                    return getNumericValueArrayData(value);
+                } else if (elementType.getName().equals(Constants.SqlTypes.DOUBLE)) {
+                    return getDoubleValueArrayData(value);
                 } else {
-                    return new Object[]{null, null};
+                    return getCustomArrayData(value);
                 }
             default:
                 return getCustomArrayData(value);
         }
     }
 
-    protected Object[] getDecimalValueArrayData(Object value) throws ApplicationError {
+    protected Object[] getSmallIntValueArrayData(Object value) throws ApplicationError {
+        System.out.println("Smallint Array Start");
         BObject objectValue;
         int arrayLength = ((BArray) value).size();
         String sqlType;
         Object innerValue;
-        Object[] arrayData = new BigDecimal[arrayLength];
+        Object[] arrayData = new Short[arrayLength];
         for (int i = 0; i < arrayLength; i++) {
             objectValue = (BObject) ((BArray) value).get(i);
             innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
-            if (innerValue instanceof BDecimal) {
+            if (innerValue instanceof Integer || innerValue instanceof Long) {
+                arrayData[i] = ((Number) innerValue).shortValue();
+            } else {
+                throw throwInvalidParameterError(value, "Smallint Array");
+            }
+            System.out.println("Array data - " + i + " = " + arrayData[i]);
+        }
+        System.out.println("Smallint Array End");
+        return new Object[]{arrayData, "SMALLINT"};
+    }
+
+    protected Object[] getIntValueArrayData(Object value) throws ApplicationError {
+        System.out.println("Int Array Start");
+        BObject objectValue;
+        int arrayLength = ((BArray) value).size();
+        String sqlType;
+        Object innerValue;
+        Object[] arrayData = new Integer[arrayLength];
+        for (int i = 0; i < arrayLength; i++) {
+            objectValue = (BObject) ((BArray) value).get(i);
+            innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
+            if (innerValue instanceof Integer || innerValue instanceof Long) {
+                arrayData[i] = ((Number) innerValue).intValue();
+            } else {
+                throw throwInvalidParameterError(value, "Int Array");
+            }
+            System.out.println("Array data - " + i + " = " + arrayData[i]);
+        }
+        System.out.println("Int Array End");
+        return new Object[]{arrayData, "INT"};
+    }
+
+    protected Object[] getBigIntValueArrayData(Object value) throws ApplicationError {
+        System.out.println("Bigint Array Start");
+        BObject objectValue;
+        int arrayLength = ((BArray) value).size();
+        String sqlType;
+        Object innerValue;
+        Object[] arrayData = new Long[arrayLength];
+        for (int i = 0; i < arrayLength; i++) {
+            objectValue = (BObject) ((BArray) value).get(i);
+            innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
+            if (innerValue instanceof Integer || innerValue instanceof Long) {
+                arrayData[i] = ((Number) innerValue).longValue();
+            } else {
+                throw throwInvalidParameterError(value, "Bigint Array");
+            }
+            System.out.println("Array data - " + i + " = " + arrayData[i]);
+        }
+        System.out.println("Bigint Array End");
+        return new Object[]{arrayData, "BIGINT"};
+    }
+
+    protected Object[] getDecimalValueArrayData(Object value) throws ApplicationError {
+        BObject objectValue;
+        int arrayLength = ((BArray) value).size();
+        Object innerValue;
+        Object[] arrayData = new BigDecimal[arrayLength];
+        System.out.println("Decimal Array Start");
+        for (int i = 0; i < arrayLength; i++) {
+            objectValue = (BObject) ((BArray) value).get(i);
+            innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
+            if (innerValue instanceof Double || innerValue instanceof Long) {
+                arrayData[i] = new BigDecimal(((Number) innerValue).doubleValue(), MathContext.DECIMAL64);
+            } else if (innerValue instanceof Integer || innerValue instanceof Float) {
+                arrayData[i] = new BigDecimal(((Number) innerValue).doubleValue(), MathContext.DECIMAL32);
+            } else if (innerValue instanceof BDecimal) {
                 arrayData[i] = ((BDecimal) innerValue).decimalValue();
             } else {
-                arrayData[i] = new BigDecimal(((Number) value).doubleValue(), MathContext.DECIMAL32);
+                throw throwInvalidParameterError(value, "Decimal Array");
             }
+            System.out.println("Array data - " + i + " = " + arrayData[i]);
         }
+        System.out.println("Decimal Array End");
         return new Object[]{arrayData, "DECIMAL"};
+    }
+
+    protected Object[] getRealValueArrayData(Object value) throws ApplicationError {
+        System.out.println("Real Array Start");
+        BObject objectValue;
+        int arrayLength = ((BArray) value).size();
+        String sqlType;
+        Object innerValue;
+        Object[] arrayData = new Double[arrayLength];
+        for (int i = 0; i < arrayLength; i++) {
+            objectValue = (BObject) ((BArray) value).get(i);
+            innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
+            if (innerValue instanceof Double) {
+                arrayData[i] = ((Number) innerValue).doubleValue();
+            } else if (innerValue instanceof Long || innerValue instanceof Float || innerValue instanceof Integer) {
+                arrayData[i] = ((Number) innerValue).doubleValue();
+            } else if (innerValue instanceof BDecimal) {
+                arrayData[i] = ((BDecimal) innerValue).decimalValue().doubleValue();
+            } else {
+                throw throwInvalidParameterError(value, "Real Array");
+            }
+            System.out.println("Array data - " + i + " = " + arrayData[i]);
+        }
+        System.out.println("Real Array End");
+        return new Object[]{arrayData, "FLOAT4"};
+    }
+
+    protected Object[] getNumericValueArrayData(Object value) throws ApplicationError {
+        BObject objectValue;
+        int arrayLength = ((BArray) value).size();
+        Object innerValue;
+        Object[] arrayData = new BigDecimal[arrayLength];
+        System.out.println("Numeric Array Start");
+        for (int i = 0; i < arrayLength; i++) {
+            objectValue = (BObject) ((BArray) value).get(i);
+            innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
+            if (innerValue instanceof Double || innerValue instanceof Long) {
+                arrayData[i] = new BigDecimal(((Number) innerValue).doubleValue(), MathContext.DECIMAL64);
+            } else if (innerValue instanceof Integer || innerValue instanceof Float) {
+                arrayData[i] = new BigDecimal(((Number) innerValue).doubleValue(), MathContext.DECIMAL32);
+            } else if (innerValue instanceof BDecimal) {
+                arrayData[i] = ((BDecimal) innerValue).decimalValue();
+            } else {
+                throw throwInvalidParameterError(value, "Numeric Array");
+            }
+            System.out.println("Array data - " + i + " = " + arrayData[i]);
+        }
+        System.out.println("Numeric Array End");
+        return new Object[]{arrayData, "NUMERIC"};
+    }
+    
+    protected Object[] getDoubleValueArrayData(Object value) throws ApplicationError {
+        System.out.println("Double Array Start");
+        BObject objectValue;
+        int arrayLength = ((BArray) value).size();
+        String sqlType;
+        Object innerValue;
+        Object[] arrayData = new Double[arrayLength];
+        for (int i = 0; i < arrayLength; i++) {
+            objectValue = (BObject) ((BArray) value).get(i);
+            innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
+            if (innerValue instanceof Double) {
+                arrayData[i] = ((Number) innerValue).doubleValue();
+            } else if (innerValue instanceof Long || innerValue instanceof Float || innerValue instanceof Integer) {
+                arrayData[i] = ((Number) innerValue).doubleValue();
+            } else if (innerValue instanceof BDecimal) {
+                arrayData[i] = ((BDecimal) innerValue).decimalValue().doubleValue();
+            } else {
+                throw throwInvalidParameterError(value, "Double Array");
+            }
+            System.out.println("Array data - " + i + " = " + arrayData[i]);
+        }
+        System.out.println("Double Array End");
+        return new Object[]{arrayData, "DOUBLE"};
     }
 
     private Object[] getStructData(Connection conn, Object value) throws SQLException, ApplicationError {
