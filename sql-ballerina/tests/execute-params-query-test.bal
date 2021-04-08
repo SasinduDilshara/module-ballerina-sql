@@ -408,6 +408,81 @@ function insertIntoArrayTable2() {
     validateResult(executeQueryMockClient(sqlQuery), 1);
 }
 
+@test:Config {
+    groups: ["execute", "execute-params"]
+}
+function insertIntoArrayTable3() {
+    SmallIntValue smallintValue1 = new (1211);
+    SmallIntValue smallintValue2 = new (478);
+    SmallIntValue[] datasmallint = [smallintValue1, smallintValue2];
+    IntegerValue integerValue1 = new (121);
+    IntegerValue integerValue2 = new (498);
+    IntegerValue[] dataint = [integerValue1, integerValue2];
+    BigIntValue bigIntValue1 = new (121);
+    BigIntValue bigIntValue2 = new (498);
+    BigIntValue[] datalong = [bigIntValue1, bigIntValue2];
+    FloatValue floatValue1 = new (1.21);
+    FloatValue floatValue2 = new (4.98);
+    FloatValue[] datafloat = [floatValue1, floatValue2];
+    DoubleValue doubleValue1 = new (12.21);
+    DoubleValue doubleValue2 = new (432.98);
+    DoubleValue[] datadouble = [doubleValue1, doubleValue2];
+    RealValue realValue1 = new (99.12);
+    RealValue realValue2 = new (12.99);
+    RealValue[] dataReal = [realValue1, realValue2];
+    DecimalValue decimalValue1 = new (121);
+    DecimalValue decimalValue2 = new (498);
+    DecimalValue[] datadecimal = [decimalValue1, decimalValue2];
+    NumericValue numericValue1 = new (12.21);
+    NumericValue numericValue2 = new (432.98);
+    NumericValue[] dataNumeric = [numericValue1, numericValue2];
+    CharValue charValue1 = new ("Char value");
+    CharValue charValue2 = new ("Character");
+    CharValue[] dataChar = [charValue1, charValue2];
+    NCharValue ncharValue1 = new ("NChar value");
+    NCharValue ncharValue2 = new ("NCharacter");
+    NCharValue[] dataNChar = [ncharValue1, ncharValue2];
+    VarcharValue varcharValue1 = new ("Varchar value");
+    VarcharValue varcharValue2 = new ("Varying Char");
+    VarcharValue[] dataVarchar = [varcharValue1, varcharValue2];
+    NVarcharValue nvarcharValue1 = new ("NVarchar value");
+    NVarcharValue nvarcharValue2 = new ("Varying NChar");
+    NVarcharValue[] dataNVarchar = [nvarcharValue1, nvarcharValue2];
+    string[] datastring = ["Hello", "Ballerina"];
+    boolean[] databoolean = [true, false, true];
+
+    record {}? value = queryMockClient(executeParamsDb, "Select * from ComplexTypes where row_id = 1");
+    byte[][] dataBlob = [<byte[]>getUntaintedData(value, "BLOB_TYPE")];
+
+    ArrayValue paraSmallint = new (datasmallint);
+    ArrayValue paraInt = new (dataint);
+    ArrayValue paraLong = new (datalong);
+    ArrayValue paraFloat = new (datafloat);
+    ArrayValue paraReal = new (dataReal);
+    ArrayValue paraDecimal = new (datadecimal);
+    ArrayValue paraNumeric = new (dataNumeric);
+    ArrayValue paraDouble = new (datadouble);
+    ArrayValue paraChar = new (dataChar);
+    ArrayValue paraNChar = new (dataNChar);
+    ArrayValue paraVarchar = new (dataVarchar);
+    ArrayValue paraNVarchar = new (dataNVarchar);
+    ArrayValue paraString = new (datastring);
+    ArrayValue paraBool = new (databoolean);
+    ArrayValue paraBlob = new (dataBlob);
+    int rowId = 7;
+
+    ParameterizedQuery sqlQuery =
+        `INSERT INTO ArrayTypes2 (row_id, int_array, long_array, float_array, double_array, decimal_array, boolean_array,
+         string_array, blob_array, smallint_array, numeric_array, real_array, char_array, nchar_array, varchar_array, nvarchar_array) VALUES(${rowId}, ${paraInt}, ${paraLong}, ${paraFloat}, ${paraDouble}, ${paraDecimal},
+         ${paraBool}, ${paraString}, ${paraBlob}, ${paraSmallint}, ${paraNumeric}, ${paraReal}, ${paraChar}, ${paraNChar}, ${paraVarchar}, ${paraNVarchar})`;
+    validateResult(executeQueryMockClient(sqlQuery), 1);
+
+    MockClient dbClient = checkpanic new (url = executeParamsDb, user = user, password = password);
+    record{}? returnData = queryMockClient(executeParamsDb, `select * from arraytypes2 where row_id = 7`);
+    io:println("\n\n", returnData, "\n\n");
+    checkpanic dbClient.close();
+}
+
 function executeQueryMockClient(ParameterizedQuery sqlQuery)
 returns ExecutionResult {
     MockClient dbClient = checkpanic new (url = executeParamsDb, user = user, password = password);

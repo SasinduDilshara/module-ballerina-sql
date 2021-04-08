@@ -319,6 +319,16 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
                     return getNumericValueArrayData(value);
                 } else if (elementType.getName().equals(Constants.SqlTypes.DOUBLE)) {
                     return getDoubleValueArrayData(value);
+                } else if (elementType.getName().equals(Constants.SqlTypes.FLOAT)) {
+                    return getFloatValueArrayData(value);
+                } else if (elementType.getName().equals(Constants.SqlTypes.CHAR)) {
+                    return getCharValueArrayData(value);
+                } else if (elementType.getName().equals(Constants.SqlTypes.NCHAR)) {
+                    return getNcharValueArrayData(value);
+                } else if (elementType.getName().equals(Constants.SqlTypes.VARCHAR)) {
+                    return getVarcharValueArrayData(value);
+                } else if (elementType.getName().equals(Constants.SqlTypes.NVARCHAR)) {
+                    return getNvarcharValueArrayData(value);
                 } else {
                     return getCustomArrayData(value);
                 }
@@ -436,7 +446,7 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
             System.out.println("Array data - " + i + " = " + arrayData[i]);
         }
         System.out.println("Real Array End");
-        return new Object[]{arrayData, "FLOAT4"};
+        return new Object[]{arrayData, "REAL"};
     }
 
     protected Object[] getNumericValueArrayData(Object value) throws ApplicationError {
@@ -486,6 +496,68 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         }
         System.out.println("Double Array End");
         return new Object[]{arrayData, "DOUBLE"};
+    }
+
+    protected Object[] getFloatValueArrayData(Object value) throws ApplicationError {
+        System.out.println("Float Array Start");
+        BObject objectValue;
+        int arrayLength = ((BArray) value).size();
+        String sqlType;
+        Object innerValue;
+        Object[] arrayData = new Double[arrayLength];
+        for (int i = 0; i < arrayLength; i++) {
+            objectValue = (BObject) ((BArray) value).get(i);
+            innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
+            if (innerValue instanceof Double) {
+                arrayData[i] = ((Number) innerValue).doubleValue();
+            } else if (innerValue instanceof Long || innerValue instanceof Float || innerValue instanceof Integer) {
+                arrayData[i] = ((Number) innerValue).doubleValue();
+            } else if (innerValue instanceof BDecimal) {
+                arrayData[i] = ((BDecimal) innerValue).decimalValue().doubleValue();
+            } else {
+                throw throwInvalidParameterError(value, "Float Array");
+            }
+            System.out.println("Array data - " + i + " = " + arrayData[i]);
+        }
+        System.out.println("Float Array End");
+        return new Object[]{arrayData, "FLOAT"};
+    }
+
+    protected Object[] getCharValueArrayData(Object value) throws ApplicationError {
+        return getStringValueArrayData(value, "CHAR");
+    }
+
+    protected Object[] getNcharValueArrayData(Object value) throws ApplicationError {
+        return getStringValueArrayData(value, "NCHAR");
+    }
+
+    protected Object[] getVarcharValueArrayData(Object value) throws ApplicationError {
+        return getStringValueArrayData(value, "VARCHAR");
+    }
+
+    protected Object[] getNvarcharValueArrayData(Object value) throws ApplicationError {
+        return getStringValueArrayData(value, "NVARCHAR");
+    }
+
+    private Object[] getStringValueArrayData(Object value, String type) throws ApplicationError {
+        System.out.println(type + " Array Start");
+        BObject objectValue;
+        int arrayLength = ((BArray) value).size();
+        String sqlType;
+        Object innerValue;
+        Object[] arrayData = new String[arrayLength];
+        for (int i = 0; i < arrayLength; i++) {
+            objectValue = (BObject) ((BArray) value).get(i);
+            innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
+            if (innerValue instanceof BString) {
+                arrayData[i] = innerValue.toString();
+            } else {
+                throw throwInvalidParameterError(value, type + " Array");
+            }
+            System.out.println("Array data - " + i + " = " + arrayData[i]);
+        }
+        System.out.println(type + " Array End");
+        return new Object[]{arrayData, type};
     }
 
     private Object[] getStructData(Connection conn, Object value) throws SQLException, ApplicationError {
