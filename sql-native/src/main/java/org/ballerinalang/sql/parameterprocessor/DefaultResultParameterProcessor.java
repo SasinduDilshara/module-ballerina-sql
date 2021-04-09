@@ -105,6 +105,8 @@ public class DefaultResultParameterProcessor extends AbstractResultParameterProc
             refValueArray = createEmptyBBRefValueArray(PredefinedTypes.TYPE_STRING);
         } else if (firstNonNullElement instanceof Boolean) {
             refValueArray = createEmptyBBRefValueArray(PredefinedTypes.TYPE_BOOLEAN);
+        } else if (firstNonNullElement instanceof Short) {
+            refValueArray = createEmptyBBRefValueArray(PredefinedTypes.TYPE_INT);
         } else if (firstNonNullElement instanceof Integer) {
             refValueArray = createEmptyBBRefValueArray(PredefinedTypes.TYPE_INT);
         } else if (firstNonNullElement instanceof Long) {
