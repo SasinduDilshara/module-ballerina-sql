@@ -13,23 +13,24 @@
 // // specific language governing permissions and limitations
 // // under the License.
 
-// import ballerina/test;
+import ballerina/test;
+import ballerina/io;
 
-// string complexQueryDb = urlPrefix + "9008/querycomplexparams";
+string complexQueryDb = urlPrefix + "9008/querycomplexparams";
 
-// @test:BeforeGroups {
-//  	value: ["query-complex-params"]
-// } 
-// function initQueryComplexContainer() {
-//  	initializeDockerContainer("sql-query-complex", "querycomplexparams", "9008", "query", "complex-test-data.sql");
-// }
+@test:BeforeGroups {
+ 	value: ["query-complex-params"]
+} 
+function initQueryComplexContainer() {
+ 	initializeDockerContainer("sql-query-complex", "querycomplexparams", "9008", "query", "complex-test-data.sql");
+}
 
-// @test:AfterGroups {
-//  	value: ["query-complex-params"]
-// } 
-// function cleanQueryComplexContainer() {
-// 	cleanDockerContainer("sql-query-complex");
-// }
+@test:AfterGroups {
+ 	value: ["query-complex-params"]
+} 
+function cleanQueryComplexContainer() {
+	cleanDockerContainer("sql-query-complex");
+}
 
 // type SelectTestAlias record {
 //     int INT_TYPE;
@@ -348,3 +349,50 @@
 //     test:assertEquals(counter, 4);
 //     checkpanic dbClient.close();
 // }
+
+type ArrayRecord record {
+    int row_id;
+    int[] smallint_array;
+    int[] int_array;
+    int[] long_array;
+    float[] float_array;
+    float[] double_array;
+    float[] real_array;
+    decimal[] decimal_array;
+    decimal[] numeric_array;
+    string[] varchar_array;
+    string[] char_array;
+    string[] nvarchar_array;
+    boolean[] boolean_array;
+};
+
+@test:Config {
+    groups: ["query", "query-complex-params"]
+}
+
+function testGetArrayTypes() returns error? {
+    MockClient dbClient = check new (url = complexQueryDb, user = user, password = password);
+    stream<record{}, error?> streamData = dbClient->query(
+      "SELECT row_id,smallint_array, int_array, long_array, float_array, double_array, decimal_array, real_array,numeric_array, varchar_array, char_array, nvarchar_array, boolean_array from ArrayTypes2 WHERE row_id = 1", ArrayRecord);
+    record {|record {} value;|}? data = check streamData.next();
+    check streamData.close();
+    record {}? value = data?.value;
+    check dbClient.close();
+    io:println("\n", "Array Query ", value, "\n");
+    ArrayRecord expectedData = {
+        row_id: 1,
+        smallint_array: [12, 232],
+        int_array: [1, 2, 3],
+        long_array: [100000000, 200000000, 300000000],
+        float_array: [245.23, 5559.49, 8796.123],
+        double_array: [245.23, 5559.49, 8796.123],
+        decimal_array: [245.12, 5559.12, 8796.92],
+        real_array: [199.33,2399.1],
+        numeric_array: [11.11, 23.23],
+        varchar_array: ["Hello", "Ballerina"],
+        char_array: ["Hello          ", "Ballerina      "],
+        nvarchar_array: ["Hello", "Ballerina"],
+        boolean_array: [true, false, true]
+    };
+    test:assertEquals(value, expectedData, "Expected data did not match.");
+}

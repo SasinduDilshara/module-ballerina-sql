@@ -323,12 +323,12 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
                     return getFloatValueArrayData(value);
                 } else if (elementType.getName().equals(Constants.SqlTypes.CHAR)) {
                     return getCharValueArrayData(value);
-                } else if (elementType.getName().equals(Constants.SqlTypes.NCHAR)) {
-                    return getNcharValueArrayData(value);
                 } else if (elementType.getName().equals(Constants.SqlTypes.VARCHAR)) {
                     return getVarcharValueArrayData(value);
                 } else if (elementType.getName().equals(Constants.SqlTypes.NVARCHAR)) {
                     return getNvarcharValueArrayData(value);
+                } else if (elementType.getName().equals(Constants.SqlTypes.BOOLEAN)) {
+                    return getBooleanValueArrayData(value);
                 } else {
                     return getCustomArrayData(value);
                 }
@@ -527,16 +527,43 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         return getStringValueArrayData(value, "CHAR");
     }
 
-    protected Object[] getNcharValueArrayData(Object value) throws ApplicationError {
-        return getStringValueArrayData(value, "NCHAR");
-    }
-
     protected Object[] getVarcharValueArrayData(Object value) throws ApplicationError {
         return getStringValueArrayData(value, "VARCHAR");
     }
 
     protected Object[] getNvarcharValueArrayData(Object value) throws ApplicationError {
         return getStringValueArrayData(value, "NVARCHAR");
+    }
+
+    protected Object[] getBooleanValueArrayData(Object value) throws ApplicationError {
+        System.out.println("BOOLEAN" + " Array Start");
+        BObject objectValue;
+        int arrayLength = ((BArray) value).size();
+        String sqlType;
+        Object innerValue;
+        Object[] arrayData = new Boolean[arrayLength];
+        for (int i = 0; i < arrayLength; i++) {
+            objectValue = (BObject) ((BArray) value).get(i);
+            innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
+            if (innerValue instanceof BString) {
+                arrayData[i] = Boolean.parseBoolean(innerValue.toString());
+            } else if (innerValue instanceof Integer || innerValue instanceof Long) {
+                long lVal = ((Number) value).longValue();
+                if (lVal == 1 || lVal == 0) {
+                    arrayData[i] = lVal == 1;
+                } else {
+                    throw new ApplicationError("Only 1 or 0 can be passed for " + "Boolean Array"
+                            + " SQL Type, but found :" + lVal);
+                }
+            } else if (innerValue instanceof Boolean) {
+                arrayData[i] = (Boolean) innerValue;
+            } else {
+                throw throwInvalidParameterError(value, "Boolean Array");
+            }
+            System.out.println("Array data - " + i + " = " + arrayData[i]);
+        }
+        System.out.println("BOOLEAN" + " Array End");
+        return new Object[]{arrayData, "BOOLEAN"};
     }
 
     private Object[] getStringValueArrayData(Object value, String type) throws ApplicationError {
@@ -1260,6 +1287,7 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
             Object[] arrayData = new byte[arrayValue.size()][];
             for (int i = 0; i < arrayData.length; i++) {
                 arrayData[i] = ((BArray) arrayValue.get(i)).getBytes();
+                System.out.println("BLOB ARRAY " + i + " " + arrayData[i]);
             }
             return new Object[]{arrayData, "BINARY"};
         } else {

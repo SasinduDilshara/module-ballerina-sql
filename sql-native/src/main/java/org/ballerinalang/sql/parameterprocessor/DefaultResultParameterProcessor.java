@@ -153,44 +153,59 @@ public class DefaultResultParameterProcessor extends AbstractResultParameterProc
             throws ApplicationError {
         int length = dataArray.length;
         if (firstNonNullElement instanceof String) {
+            System.out.println("Data Array :- " + dataArray + "Query Instance:- " + "String");
             BArray stringDataArray = ValueCreator.createArrayValue(stringArrayType);
             for (int i = 0; i < length; i++) {
                 stringDataArray.add(i, StringUtils.fromString((String) dataArray[i]));
             }
             return stringDataArray;
         } else if (firstNonNullElement instanceof Boolean) {
+            System.out.println("Data Array :- " + dataArray + "Query Instance:- " + "Bolean");
             BArray boolDataArray = ValueCreator.createArrayValue(booleanArrayType);
             for (int i = 0; i < length; i++) {
                 boolDataArray.add(i, ((Boolean) dataArray[i]).booleanValue());
             }
             return boolDataArray;
+        } else if (firstNonNullElement instanceof Short) {
+            System.out.println("Data Array :- " + dataArray + "Query Instance:- " + "Short");
+            BArray shortDataArray = ValueCreator.createArrayValue(intArrayType);
+            for (int i = 0; i < length; i++) {
+                shortDataArray.add(i, ((Short) dataArray[i]).intValue());
+            }
+            return shortDataArray;
         } else if (firstNonNullElement instanceof Integer) {
+            System.out.println("Data Array :- " + dataArray + "Query Instance:- " + "Integer");
             BArray intDataArray = ValueCreator.createArrayValue(intArrayType);
             for (int i = 0; i < length; i++) {
                 intDataArray.add(i, ((Integer) dataArray[i]).intValue());
             }
             return intDataArray;
         } else if (firstNonNullElement instanceof Long) {
+            System.out.println("Data Array :- " + dataArray + "Query Instance:- " + "Long");
             BArray longDataArray = ValueCreator.createArrayValue(intArrayType);
             for (int i = 0; i < length; i++) {
                 longDataArray.add(i, ((Long) dataArray[i]).longValue());
             }
             return longDataArray;
         } else if (firstNonNullElement instanceof Float) {
+            System.out.println("Data Array :- " + dataArray + "Query Instance:- " + "Float");
             BArray floatDataArray = ValueCreator.createArrayValue(floatArrayType);
             for (int i = 0; i < length; i++) {
                 floatDataArray.add(i, ((Float) dataArray[i]).floatValue());
             }
             return floatDataArray;
         } else if (firstNonNullElement instanceof Double) {
+            System.out.println("Data Array :- " + dataArray + "Query Instance:- " + "Double");
             BArray doubleDataArray = ValueCreator.createArrayValue(floatArrayType);
             for (int i = 0; i < dataArray.length; i++) {
                 doubleDataArray.add(i, ((Double) dataArray[i]).doubleValue());
             }
             return doubleDataArray;
         } else if ((firstNonNullElement instanceof BigDecimal)) {
+            System.out.println("Data Array :- " + dataArray + "Query Instance:- " + "Big decimal");
             BArray decimalDataArray = ValueCreator.createArrayValue(decimalArrayType);
             for (int i = 0; i < dataArray.length; i++) {
+                System.out.println("BG dataArray[i] " + dataArray[i]);
                 decimalDataArray.add(i, ValueCreator.createDecimalValue((BigDecimal) dataArray[i]));
             }
             return decimalDataArray;
