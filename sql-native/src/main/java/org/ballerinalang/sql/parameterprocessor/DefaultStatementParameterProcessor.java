@@ -329,6 +329,8 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
                     return getNvarcharValueArrayData(value);
                 } else if (elementType.getName().equals(Constants.SqlTypes.BOOLEAN)) {
                     return getBooleanValueArrayData(value);
+                } else if (elementType.getName().equals(Constants.SqlTypes.DATE)) {
+                    return getDateValueArrayData(value);
                 } else {
                     return getCustomArrayData(value);
                 }
@@ -564,6 +566,36 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         }
         System.out.println("BOOLEAN" + " Array End");
         return new Object[]{arrayData, "BOOLEAN"};
+    }
+
+    protected Object[] getDateValueArrayData(Object value) throws ApplicationError {
+        System.out.println("DATE" + " Array Start");
+        BObject objectValue;
+        int arrayLength = ((BArray) value).size();
+        String sqlType;
+        Object innerValue;
+        Object[] arrayData = new Date[arrayLength];
+        for (int i = 0; i < arrayLength; i++) {
+            objectValue = (BObject) ((BArray) value).get(i);
+            innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
+            if (value instanceof BString) {
+                arrayData[i] = Date.valueOf(value.toString());
+            } else if (value instanceof BMap) {
+                BMap dateMap = (BMap) value;
+                int year = Math.toIntExact(dateMap.getIntValue(StringUtils.
+                        fromString(org.ballerinalang.stdlib.time.util.Constants.DATE_RECORD_YEAR)));
+                int month = Math.toIntExact(dateMap.getIntValue(StringUtils.
+                        fromString(org.ballerinalang.stdlib.time.util.Constants.DATE_RECORD_MONTH)));
+                int day = Math.toIntExact(dateMap.getIntValue(StringUtils.
+                        fromString(org.ballerinalang.stdlib.time.util.Constants.DATE_RECORD_DAY)));
+                arrayData[i] = Date.valueOf(year + "-" + month + "-" + day);
+            } else {
+                throw throwInvalidParameterError(value, sqlType);
+            }
+            System.out.println("Array data - " + i + " = " + arrayData[i]);
+        }
+        System.out.println("DATE" + " Array End");
+        return new Object[]{arrayData, "DATE"};
     }
 
     private Object[] getStringValueArrayData(Object value, String type) throws ApplicationError {
