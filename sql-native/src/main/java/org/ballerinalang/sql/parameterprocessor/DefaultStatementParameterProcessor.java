@@ -282,7 +282,7 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         }
     }
 
-    private Object[] getArrayData(Object value) throws ApplicationError {
+    private Object[] getArrayData(Object value) throws ApplicationError, IOException {
         Type type = TypeUtils.getType(value);
         if (value == null || type.getTag() != TypeTags.ARRAY_TAG) {
             return new Object[]{null, null};
@@ -331,6 +331,18 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
                     return getBooleanValueArrayData(value);
                 } else if (elementType.getName().equals(Constants.SqlTypes.DATE)) {
                     return getDateValueArrayData(value);
+                } else if (elementType.getName().equals(Constants.SqlTypes.TIME)) {
+                    return getTimeValueArrayData(value);
+                } else if (elementType.getName().equals(Constants.SqlTypes.DATETIME)) {
+                    return getDateTimeValueArrayData(value);
+                } else if (elementType.getName().equals(Constants.SqlTypes.TIMESTAMP)) {
+                    return getTimestampValueArrayData(value);
+                } else if (elementType.getName().equals(Constants.SqlTypes.BINARY)) {
+                    return getBinaryValueArrayData(value);
+                } else if (elementType.getName().equals(Constants.SqlTypes.VARBINARY)) {
+                    return getVarbinaryValueArrayData(value);
+                } else if (elementType.getName().equals(Constants.SqlTypes.BIT)) {
+                    return getBitValueArrayData(value);
                 } else {
                     return getCustomArrayData(value);
                 }
@@ -343,7 +355,6 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         System.out.println("Smallint Array Start");
         BObject objectValue;
         int arrayLength = ((BArray) value).size();
-        String sqlType;
         Object innerValue;
         Object[] arrayData = new Short[arrayLength];
         for (int i = 0; i < arrayLength; i++) {
@@ -352,7 +363,7 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
             if (innerValue instanceof Integer || innerValue instanceof Long) {
                 arrayData[i] = ((Number) innerValue).shortValue();
             } else {
-                throw throwInvalidParameterError(value, "Smallint Array");
+                throw throwInvalidParameterError(innerValue, "Smallint Array");
             }
             System.out.println("Array data - " + i + " = " + arrayData[i]);
         }
@@ -364,7 +375,6 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         System.out.println("Int Array Start");
         BObject objectValue;
         int arrayLength = ((BArray) value).size();
-        String sqlType;
         Object innerValue;
         Object[] arrayData = new Integer[arrayLength];
         for (int i = 0; i < arrayLength; i++) {
@@ -373,7 +383,7 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
             if (innerValue instanceof Integer || innerValue instanceof Long) {
                 arrayData[i] = ((Number) innerValue).intValue();
             } else {
-                throw throwInvalidParameterError(value, "Int Array");
+                throw throwInvalidParameterError(innerValue, "Int Array");
             }
             System.out.println("Array data - " + i + " = " + arrayData[i]);
         }
@@ -385,7 +395,6 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         System.out.println("Bigint Array Start");
         BObject objectValue;
         int arrayLength = ((BArray) value).size();
-        String sqlType;
         Object innerValue;
         Object[] arrayData = new Long[arrayLength];
         for (int i = 0; i < arrayLength; i++) {
@@ -394,7 +403,7 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
             if (innerValue instanceof Integer || innerValue instanceof Long) {
                 arrayData[i] = ((Number) innerValue).longValue();
             } else {
-                throw throwInvalidParameterError(value, "Bigint Array");
+                throw throwInvalidParameterError(innerValue, "Bigint Array");
             }
             System.out.println("Array data - " + i + " = " + arrayData[i]);
         }
@@ -418,7 +427,7 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
             } else if (innerValue instanceof BDecimal) {
                 arrayData[i] = ((BDecimal) innerValue).decimalValue();
             } else {
-                throw throwInvalidParameterError(value, "Decimal Array");
+                throw throwInvalidParameterError(innerValue, "Decimal Array");
             }
             System.out.println("Array data - " + i + " = " + arrayData[i]);
         }
@@ -430,7 +439,6 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         System.out.println("Real Array Start");
         BObject objectValue;
         int arrayLength = ((BArray) value).size();
-        String sqlType;
         Object innerValue;
         Object[] arrayData = new Double[arrayLength];
         for (int i = 0; i < arrayLength; i++) {
@@ -443,7 +451,7 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
             } else if (innerValue instanceof BDecimal) {
                 arrayData[i] = ((BDecimal) innerValue).decimalValue().doubleValue();
             } else {
-                throw throwInvalidParameterError(value, "Real Array");
+                throw throwInvalidParameterError(innerValue, "Real Array");
             }
             System.out.println("Array data - " + i + " = " + arrayData[i]);
         }
@@ -467,7 +475,7 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
             } else if (innerValue instanceof BDecimal) {
                 arrayData[i] = ((BDecimal) innerValue).decimalValue();
             } else {
-                throw throwInvalidParameterError(value, "Numeric Array");
+                throw throwInvalidParameterError(innerValue, "Numeric Array");
             }
             System.out.println("Array data - " + i + " = " + arrayData[i]);
         }
@@ -479,7 +487,6 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         System.out.println("Double Array Start");
         BObject objectValue;
         int arrayLength = ((BArray) value).size();
-        String sqlType;
         Object innerValue;
         Object[] arrayData = new Double[arrayLength];
         for (int i = 0; i < arrayLength; i++) {
@@ -492,7 +499,7 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
             } else if (innerValue instanceof BDecimal) {
                 arrayData[i] = ((BDecimal) innerValue).decimalValue().doubleValue();
             } else {
-                throw throwInvalidParameterError(value, "Double Array");
+                throw throwInvalidParameterError(innerValue, "Double Array");
             }
             System.out.println("Array data - " + i + " = " + arrayData[i]);
         }
@@ -504,7 +511,6 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         System.out.println("Float Array Start");
         BObject objectValue;
         int arrayLength = ((BArray) value).size();
-        String sqlType;
         Object innerValue;
         Object[] arrayData = new Double[arrayLength];
         for (int i = 0; i < arrayLength; i++) {
@@ -517,7 +523,7 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
             } else if (innerValue instanceof BDecimal) {
                 arrayData[i] = ((BDecimal) innerValue).decimalValue().doubleValue();
             } else {
-                throw throwInvalidParameterError(value, "Float Array");
+                throw throwInvalidParameterError(innerValue, "Float Array");
             }
             System.out.println("Array data - " + i + " = " + arrayData[i]);
         }
@@ -537,51 +543,31 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         return getStringValueArrayData(value, "NVARCHAR");
     }
 
+    protected Object[] getDateTimeValueArrayData(Object value) throws ApplicationError {
+        return getDateTimeAndTimestampValueArrayData(value);
+    }
+
+    protected Object[] getTimestampValueArrayData(Object value) throws ApplicationError {
+        return getDateTimeAndTimestampValueArrayData(value);
+    }
+
     protected Object[] getBooleanValueArrayData(Object value) throws ApplicationError {
-        System.out.println("BOOLEAN" + " Array Start");
-        BObject objectValue;
-        int arrayLength = ((BArray) value).size();
-        String sqlType;
-        Object innerValue;
-        Object[] arrayData = new Boolean[arrayLength];
-        for (int i = 0; i < arrayLength; i++) {
-            objectValue = (BObject) ((BArray) value).get(i);
-            innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
-            if (innerValue instanceof BString) {
-                arrayData[i] = Boolean.parseBoolean(innerValue.toString());
-            } else if (innerValue instanceof Integer || innerValue instanceof Long) {
-                long lVal = ((Number) value).longValue();
-                if (lVal == 1 || lVal == 0) {
-                    arrayData[i] = lVal == 1;
-                } else {
-                    throw new ApplicationError("Only 1 or 0 can be passed for " + "Boolean Array"
-                            + " SQL Type, but found :" + lVal);
-                }
-            } else if (innerValue instanceof Boolean) {
-                arrayData[i] = (Boolean) innerValue;
-            } else {
-                throw throwInvalidParameterError(value, "Boolean Array");
-            }
-            System.out.println("Array data - " + i + " = " + arrayData[i]);
-        }
-        System.out.println("BOOLEAN" + " Array End");
-        return new Object[]{arrayData, "BOOLEAN"};
+        return getBitAndBooleanValueArrayData(value, "Boolean");
     }
 
     protected Object[] getDateValueArrayData(Object value) throws ApplicationError {
         System.out.println("DATE" + " Array Start");
         BObject objectValue;
         int arrayLength = ((BArray) value).size();
-        String sqlType;
         Object innerValue;
         Object[] arrayData = new Date[arrayLength];
         for (int i = 0; i < arrayLength; i++) {
             objectValue = (BObject) ((BArray) value).get(i);
             innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
-            if (value instanceof BString) {
-                arrayData[i] = Date.valueOf(value.toString());
-            } else if (value instanceof BMap) {
-                BMap dateMap = (BMap) value;
+            if (innerValue instanceof BString) {
+                arrayData[i] = Date.valueOf(innerValue.toString());
+            } else if (innerValue instanceof BMap) {
+                BMap dateMap = (BMap) innerValue;
                 int year = Math.toIntExact(dateMap.getIntValue(StringUtils.
                         fromString(org.ballerinalang.stdlib.time.util.Constants.DATE_RECORD_YEAR)));
                 int month = Math.toIntExact(dateMap.getIntValue(StringUtils.
@@ -590,7 +576,7 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
                         fromString(org.ballerinalang.stdlib.time.util.Constants.DATE_RECORD_DAY)));
                 arrayData[i] = Date.valueOf(year + "-" + month + "-" + day);
             } else {
-                throw throwInvalidParameterError(value, sqlType);
+                throw throwInvalidParameterError(innerValue, "Date Array");
             }
             System.out.println("Array data - " + i + " = " + arrayData[i]);
         }
@@ -598,11 +584,244 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         return new Object[]{arrayData, "DATE"};
     }
 
+    protected Object[] getTimeValueArrayData(Object value) throws ApplicationError {
+        System.out.println("Time" + " Array Start");
+        BObject objectValue;
+        int arrayLength = ((BArray) value).size();
+        Object innerValue;
+        Object[] arrayData = new Object[arrayLength];
+        boolean containsTimeZone = false; 
+        for (int i = 0; i < arrayLength; i++) {
+            objectValue = (BObject) ((BArray) value).get(i);
+            innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
+            if (innerValue instanceof BString) {
+                arrayData[i] = innerValue.toString();
+            } else if (innerValue instanceof BMap) {
+                BMap timeMap = (BMap) innerValue;
+                int hour = Math.toIntExact(timeMap.getIntValue(StringUtils.
+                        fromString(org.ballerinalang.stdlib.time.util.Constants.TIME_OF_DAY_RECORD_HOUR)));
+                int minute = Math.toIntExact(timeMap.getIntValue(StringUtils.
+                        fromString(org.ballerinalang.stdlib.time.util.Constants.TIME_OF_DAY_RECORD_MINUTE)));
+                BDecimal second = BDecimal.valueOf(0);
+                if (timeMap.containsKey(StringUtils
+                        .fromString(org.ballerinalang.stdlib.time.util.Constants.TIME_OF_DAY_RECORD_SECOND))) {
+                    second = ((BDecimal) timeMap.get(StringUtils
+                            .fromString(org.ballerinalang.stdlib.time.util.Constants.TIME_OF_DAY_RECORD_SECOND)));
+                }
+                int zoneHours = 0;
+                int zoneMinutes = 0;
+                BDecimal zoneSeconds = BDecimal.valueOf(0);
+                boolean timeZone = false;
+                if (timeMap.containsKey(StringUtils.
+                        fromString(org.ballerinalang.stdlib.time.util.Constants.CIVIL_RECORD_UTC_OFFSET))) {
+                    timeZone = true;
+                    containsTimeZone = true;
+                    BMap zoneMap = (BMap) timeMap.get(StringUtils.
+                            fromString(org.ballerinalang.stdlib.time.util.Constants.CIVIL_RECORD_UTC_OFFSET));
+                    zoneHours = Math.toIntExact(zoneMap.getIntValue(StringUtils.
+                            fromString(org.ballerinalang.stdlib.time.util.Constants.ZONE_OFFSET_RECORD_HOUR)));
+                    zoneMinutes = Math.toIntExact(zoneMap.getIntValue(StringUtils.
+                            fromString(org.ballerinalang.stdlib.time.util.Constants.ZONE_OFFSET_RECORD_MINUTE)));
+                    if (zoneMap.containsKey(StringUtils.
+                            fromString(org.ballerinalang.stdlib.time.util.Constants.ZONE_OFFSET_RECORD_SECOND))) {
+                        zoneSeconds = ((BDecimal) zoneMap.get(StringUtils.
+                                fromString(org.ballerinalang.stdlib.time.util.Constants.ZONE_OFFSET_RECORD_SECOND)));
+                    }
+                }
+                int intSecond = second.decimalValue().setScale(0, RoundingMode.FLOOR).intValue();
+                int intNanoSecond = second.decimalValue().subtract(new BigDecimal(intSecond))
+                        .multiply(org.ballerinalang.stdlib.time.util.Constants.ANALOG_GIGA)
+                        .setScale(0, RoundingMode.HALF_UP).intValue();
+                LocalTime localTime = LocalTime.of(hour, minute, intSecond, intNanoSecond);
+                if (timeZone) {
+                    int intZoneSecond = zoneSeconds.decimalValue().setScale(0, RoundingMode.HALF_UP)
+                            .intValue();
+                    OffsetTime offsetTime = OffsetTime.of(localTime,
+                            ZoneOffset.ofHoursMinutesSeconds(zoneHours, zoneMinutes, intZoneSecond));
+                    arrayData[i] = offsetTime;
+                } else {
+                    arrayData[i] = Time.valueOf(localTime);
+                }
+            } else {
+                throw throwInvalidParameterError(innerValue, "Time Array");
+            }
+            System.out.println("Time Array data - " + i + " = " + arrayData[i]);
+        }
+        System.out.println("Time" + " Array End");
+        if (containsTimeZone) {
+            return new Object[]{arrayData, "TIME WITH TIMEZONE"};
+        } else {
+            return new Object[]{arrayData, "TIME"};
+        }
+    }
+
+    protected Object[] getBinaryValueArrayData(Object value) throws ApplicationError, IOException {
+        return getBinaryAndBlobValueArrayData(value, "BINARY");
+    }
+
+    protected Object[] getVarbinaryValueArrayData(Object value) throws ApplicationError, IOException {
+        return getBinaryAndBlobValueArrayData(value, "VARBINARY");
+    }
+
+    protected Object[] getBitValueArrayData(Object value) throws ApplicationError {
+        return getBitAndBooleanValueArrayData(value, "Bit");
+    }
+
+    private Object[] getBitAndBooleanValueArrayData(Object value, String type) throws ApplicationError {
+        System.out.println("BOOLEAN" + " Array Start");
+        BObject objectValue;
+        int arrayLength = ((BArray) value).size();
+        Object innerValue;
+        Object[] arrayData = new Boolean[arrayLength];
+        for (int i = 0; i < arrayLength; i++) {
+            objectValue = (BObject) ((BArray) value).get(i);
+            innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
+            if (innerValue instanceof BString) {
+                arrayData[i] = Boolean.parseBoolean(innerValue.toString());
+            } else if (innerValue instanceof Integer || innerValue instanceof Long) {
+                long lVal = ((Number) innerValue).longValue();
+                if (lVal == 1 || lVal == 0) {
+                    arrayData[i] = lVal == 1;
+                } else {
+                    throw new ApplicationError("Only 1 or 0 can be passed for " + type
+                            + " SQL Type, but found :" + lVal);
+                }
+            } else if (innerValue instanceof Boolean) {
+                arrayData[i] = (Boolean) innerValue;
+            } else {
+                throw throwInvalidParameterError(innerValue, type + " Array");
+            }
+            System.out.println("Array data - " + i + " = " + arrayData[i]);
+        }
+        System.out.println("BOOLEAN" + " Array End");
+        return new Object[]{arrayData, type};
+    }
+
+    private Object[] getBinaryAndBlobValueArrayData(Object value, String type) throws ApplicationError, IOException {
+        System.out.println(type + " Array Start");
+        BObject objectValue;
+        int arrayLength = ((BArray) value).size();
+        Object innerValue;
+        Object[] arrayData = new Object[arrayLength];
+        for (int i = 0; i < arrayLength; i++) {
+            objectValue = (BObject) ((BArray) value).get(i);
+            innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
+            System.out.println("getBinaryAndBlobValueArrayData value " + innerValue);
+            if (innerValue instanceof BArray) {
+                System.out.println("getBinaryAndBlobValueArrayData BARRAY " + innerValue);
+                BArray arrayValue = (BArray) innerValue;
+                if (arrayValue.getElementType().getTag() == org.wso2.ballerinalang.compiler.util.TypeTags.BYTE) {
+                    arrayData[i] = arrayValue.getBytes();
+                } else {
+                    throw throwInvalidParameterError(innerValue, type);
+                }
+            } else if (innerValue instanceof BObject) {
+                System.out.println("getBinaryAndBlobValueArrayData BObject " + innerValue);
+                objectValue = (BObject) innerValue;
+                if (objectValue.getType().getName().equalsIgnoreCase(Constants.READ_BYTE_CHANNEL_STRUCT) &&
+                        objectValue.getType().getPackage().toString()
+                            .equalsIgnoreCase(IOUtils.getIOPackage().toString())) {
+                    Channel byteChannel = (Channel) objectValue.getNativeData(IOConstants.BYTE_CHANNEL_NAME);
+                    arrayData[i] = byteChannel.getInputStream();
+                } else {
+                    throw throwInvalidParameterError(innerValue, type + " Array");
+                }
+            } else {
+                throw throwInvalidParameterError(innerValue, type);
+            }
+            System.out.println("Array data - " + i + " = " + arrayData[i]);
+        }
+        System.out.println(type + " Array End");
+        return new Object[]{arrayData, type};
+    }
+
+    private Object[] getDateTimeAndTimestampValueArrayData(Object value) throws ApplicationError {
+        System.out.println("DATE" + " Array Start");
+        BObject objectValue;
+        int arrayLength = ((BArray) value).size();
+        Object innerValue;
+        boolean containsTimeZone = false; 
+        Object[] arrayData = new Object[arrayLength];
+        for (int i = 0; i < arrayLength; i++) {
+            objectValue = (BObject) ((BArray) value).get(i);
+            innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
+            if (innerValue instanceof BArray) {
+                //this is mapped to time:Utc
+                BArray dateTimeStruct = (BArray) innerValue;
+                ZonedDateTime zonedDt = TimeValueHandler.createZonedDateTimeFromUtc(dateTimeStruct);
+                Timestamp timestamp = new Timestamp(zonedDt.toInstant().toEpochMilli());
+                arrayData[i] = timestamp;
+            } else if (innerValue instanceof BMap) {
+                //this is mapped to time:Civil
+                BMap dateMap = (BMap) innerValue;
+                int year = Math.toIntExact(dateMap.getIntValue(StringUtils
+                        .fromString(org.ballerinalang.stdlib.time.util.Constants.DATE_RECORD_YEAR)));
+                int month = Math.toIntExact(dateMap.getIntValue(StringUtils
+                        .fromString(org.ballerinalang.stdlib.time.util.Constants.DATE_RECORD_MONTH)));
+                int day = Math.toIntExact(dateMap.getIntValue(StringUtils
+                        .fromString(org.ballerinalang.stdlib.time.util.Constants.DATE_RECORD_DAY)));
+                int hour = Math.toIntExact(dateMap.getIntValue(StringUtils
+                        .fromString(org.ballerinalang.stdlib.time.util.Constants.TIME_OF_DAY_RECORD_HOUR)));
+                int minute = Math.toIntExact(dateMap.getIntValue(StringUtils.
+                        fromString(org.ballerinalang.stdlib.time.util.Constants.TIME_OF_DAY_RECORD_MINUTE)));
+                BDecimal second = BDecimal.valueOf(0);
+                if (dateMap.containsKey(StringUtils
+                        .fromString(org.ballerinalang.stdlib.time.util.Constants.TIME_OF_DAY_RECORD_SECOND))) {
+                    second = ((BDecimal) dateMap.get(StringUtils.
+                            fromString(org.ballerinalang.stdlib.time.util.Constants.TIME_OF_DAY_RECORD_SECOND)));
+                }
+                int zoneHours = 0;
+                int zoneMinutes = 0;
+                BDecimal zoneSeconds = BDecimal.valueOf(0);
+                boolean timeZone = false;
+                if (dateMap.containsKey(StringUtils.
+                        fromString(org.ballerinalang.stdlib.time.util.Constants.CIVIL_RECORD_UTC_OFFSET))) {
+                    timeZone = true;
+                    containsTimeZone = true;
+                    BMap zoneMap = (BMap) dateMap.get(StringUtils.
+                            fromString(org.ballerinalang.stdlib.time.util.Constants.CIVIL_RECORD_UTC_OFFSET));
+                    zoneHours = Math.toIntExact(zoneMap.getIntValue(StringUtils.
+                            fromString(org.ballerinalang.stdlib.time.util.Constants.ZONE_OFFSET_RECORD_HOUR)));
+                    zoneMinutes = Math.toIntExact(zoneMap.getIntValue(StringUtils.
+                            fromString(org.ballerinalang.stdlib.time.util.Constants.ZONE_OFFSET_RECORD_MINUTE)));
+                    if (zoneMap.containsKey(StringUtils.
+                            fromString(org.ballerinalang.stdlib.time.util.Constants.ZONE_OFFSET_RECORD_SECOND))) {
+                        zoneSeconds = ((BDecimal) zoneMap.get(StringUtils.
+                                fromString(org.ballerinalang.stdlib.time.util.Constants.ZONE_OFFSET_RECORD_SECOND)));
+                    }
+                }
+                int intSecond = second.decimalValue().setScale(0, RoundingMode.FLOOR).intValue();
+                int intNanoSecond = second.decimalValue().subtract(new BigDecimal(intSecond))
+                        .multiply(org.ballerinalang.stdlib.time.util.Constants.ANALOG_GIGA)
+                        .setScale(0, RoundingMode.HALF_UP).intValue();
+                LocalDateTime localDateTime = LocalDateTime
+                        .of(year, month, day, hour, minute, intSecond, intNanoSecond);
+                if (timeZone) {
+                    int intZoneSecond = zoneSeconds.decimalValue().setScale(0, RoundingMode.HALF_UP)
+                            .intValue();
+                    OffsetDateTime offsetDateTime = OffsetDateTime.of(localDateTime,
+                            ZoneOffset.ofHoursMinutesSeconds(zoneHours, zoneMinutes, intZoneSecond));
+                    arrayData[i] =  offsetDateTime;
+                } else {
+                    arrayData[i] = Timestamp.valueOf(localDateTime);
+                }
+            } else {
+                throw throwInvalidParameterError(value, "TIMESTAMP ARRAY");
+            }
+            System.out.println("Array data - " + i + " = " + arrayData[i]);
+        }
+        System.out.println("DATE" + " Array End");
+        if (containsTimeZone) {
+            return new Object[]{arrayData, "TIMESTAMP WITH TIMEZONE"};
+        } else {
+            return new Object[]{arrayData, "TIMESTAMP"};
+        }
+    }
+
     private Object[] getStringValueArrayData(Object value, String type) throws ApplicationError {
         System.out.println(type + " Array Start");
         BObject objectValue;
         int arrayLength = ((BArray) value).size();
-        String sqlType;
         Object innerValue;
         Object[] arrayData = new String[arrayLength];
         for (int i = 0; i < arrayLength; i++) {
@@ -1152,7 +1371,7 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
 
     @Override
     protected void setArray(Connection conn, PreparedStatement preparedStatement, int index, Object value)
-            throws SQLException, ApplicationError {
+            throws SQLException, ApplicationError, IOException {
         Object[] arrayData = getArrayData(value);
         if (arrayData[0] != null) {
             Array array = conn.createArrayOf((String) arrayData[1], (Object[]) arrayData[0]);

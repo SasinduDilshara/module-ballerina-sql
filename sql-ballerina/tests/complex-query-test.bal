@@ -15,6 +15,7 @@
 
 import ballerina/test;
 import ballerina/io;
+import ballerina/time;
 
 string complexQueryDb = urlPrefix + "9008/querycomplexparams";
 
@@ -364,6 +365,11 @@ type ArrayRecord record {
     string[] char_array;
     string[] nvarchar_array;
     boolean[] boolean_array;
+    time:Date[] date_array;
+    time:TimeOfDay[] time_array;
+    time:Civil[] datetime_array;
+    time:Civil[] timestamp_array;
+    byte[][] blob_array;
 };
 
 @test:Config {
@@ -373,7 +379,7 @@ type ArrayRecord record {
 function testGetArrayTypes() returns error? {
     MockClient dbClient = check new (url = complexQueryDb, user = user, password = password);
     stream<record{}, error?> streamData = dbClient->query(
-      "SELECT row_id,smallint_array, int_array, long_array, float_array, double_array, decimal_array, real_array,numeric_array, varchar_array, char_array, nvarchar_array, boolean_array from ArrayTypes2 WHERE row_id = 1", ArrayRecord);
+      "SELECT row_id,smallint_array, int_array, long_array, float_array, double_array, decimal_array, real_array,numeric_array, varchar_array, char_array, nvarchar_array, boolean_array, date_array, time_array, datetime_array, timestamp_array, blob_array from ArrayTypes2 WHERE row_id = 1", ArrayRecord);
     record {|record {} value;|}? data = check streamData.next();
     check streamData.close();
     record {}? value = data?.value;
@@ -381,6 +387,8 @@ function testGetArrayTypes() returns error? {
     io:println("\n", "Array Query ", value, "\n");
     ArrayRecord expectedData = {
         row_id: 1,
+        blob_array: [<byte[]>[119,115,111,50,32,98,97,108,108,101,114,105,110,97,32,98,108,111,98,32,116,101,115,116,46], 
+                    <byte[]>[119,115,111,50,32,98,97,108,108,101,114,105,110,97,32,98,108,111,98,32,116,101,115,116,46]],
         smallint_array: [12, 232],
         int_array: [1, 2, 3],
         long_array: [100000000, 200000000, 300000000],
@@ -392,7 +400,11 @@ function testGetArrayTypes() returns error? {
         varchar_array: ["Hello", "Ballerina"],
         char_array: ["Hello          ", "Ballerina      "],
         nvarchar_array: ["Hello", "Ballerina"],
-        boolean_array: [true, false, true]
+        boolean_array: [true, false, true],
+        date_array: [{year: 2017, month: 2, day: 3}, {year: 2017, month: 2, day: 3}],
+        time_array: [{hour: 11, minute: 22, second: 42}, {hour: 12, minute: 23, second: 45}],
+        datetime_array: [{year: 2017, month: 2, day: 3, hour: 11, minute: 53, second: 0},{year: 2019, month: 4, day: 5, hour: 12, minute: 33, second: 10}],
+        timestamp_array: [{year: 2017, month: 2, day: 3, hour: 11, minute: 53, second: 0},{year: 2019, month: 4, day: 5, hour: 12, minute: 33, second: 10}]
     };
     test:assertEquals(value, expectedData, "Expected data did not match.");
 }

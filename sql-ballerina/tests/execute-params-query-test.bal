@@ -16,6 +16,7 @@
 
 import ballerina/io;
 import ballerina/test;
+import ballerina/time;
 
 string executeParamsDb = urlPrefix + "9007/executeparams";
 
@@ -451,12 +452,34 @@ function insertIntoArrayTable3() {
     BooleanValue trueValue = new (true);
     BooleanValue falseValue = new (false);
     BooleanValue[] databoolean = [trueValue, falseValue, trueValue];
-
+    DateValue date1 = new ("2021-12-18");
+    DateValue date2 = new ("2021-12-19");
+    DateValue[] dataDate = [date1, date2];
+    time:TimeOfDay time = {hour: 20, minute: 8, second: 12};
+    TimeValue time1 = new (time);
+    TimeValue time2 = new (time);
+    TimeValue[] dataTime = [time1, time2];
+    time:Civil datetime = {year: 2021, month: 12, day: 18, hour: 20, minute: 8, second: 12};
+    DateTimeValue datetime1 = new (datetime);
+    DateTimeValue datetime2 = new (datetime);
+    DateTimeValue[] dataDatetime = [datetime1, datetime2];
+    time:Utc timestampUtc = [12345600, 12];
+    TimestampValue timestamp1 = new (timestampUtc);
+    TimestampValue timestamp2 = new (timestampUtc);
+    TimestampValue[] dataTimestamp = [timestamp1, timestamp2];
+    byte[] byteArray1 = [1, 2, 3];
+    byte[] byteArray2 = [4, 5, 6];
+    BinaryValue binary1 = new (byteArray1);
+    BinaryValue binary2 = new (byteArray2);
+    BinaryValue[] dataBinary = [binary1, binary2];
+    VarBinaryValue varBinary1 = new (byteArray1);
+    VarBinaryValue varBinary2 = new (byteArray2);
+    VarBinaryValue[] dataVarBinary = [varBinary1, varBinary2];
+    io:ReadableByteChannel byteChannel = getBlobColumnChannel();
     record {}? value = queryMockClient(executeParamsDb, "Select * from ComplexTypes where row_id = 1");
     byte[][] dataBlob = [<byte[]>getUntaintedData(value, "BLOB_TYPE")];
-    // byte[][] dataBlob = [[1,2,3,4]];
 
-    io:println("\n\ndataBlob dataBlob", dataBlob, "\n\n");
+    io:println("\n\ndataBlob dataBlob", dataBlob, "\n\n", byteChannel, "\n", "\n");
     ArrayValue paraSmallint = new (datasmallint);
     ArrayValue paraInt = new (dataint);
     ArrayValue paraLong = new (datalong);
@@ -470,13 +493,19 @@ function insertIntoArrayTable3() {
     ArrayValue paraNVarchar = new (dataNVarchar);
     ArrayValue paraString = new (datastring);
     ArrayValue paraBool = new (databoolean);
+    ArrayValue paraDate = new (dataDate);
+    ArrayValue paraTime = new (dataTime);
+    ArrayValue paraDatetime = new (dataDatetime);
+    ArrayValue paraTimestamp = new (dataTimestamp);
+    ArrayValue paraBinary = new (dataBinary);
+    ArrayValue paraVarBinary = new (dataVarBinary);
     ArrayValue paraBlob = new (dataBlob);
     int rowId = 7;
 
     ParameterizedQuery sqlQuery =
         `INSERT INTO ArrayTypes2 (row_id, int_array, long_array, float_array, double_array, decimal_array, boolean_array,
-         string_array, blob_array, smallint_array, numeric_array, real_array, char_array, varchar_array, nvarchar_array) VALUES(${rowId}, ${paraInt}, ${paraLong}, ${paraFloat}, ${paraDouble}, ${paraDecimal},
-         ${paraBool}, ${paraString}, ${paraBlob}, ${paraSmallint}, ${paraNumeric}, ${paraReal}, ${paraChar}, ${paraVarchar}, ${paraNVarchar})`;
+         string_array, smallint_array, numeric_array, real_array, char_array, varchar_array, nvarchar_array, date_array, time_array, datetime_array, timestamp_array, binary_array, varbinary_array, blob_array) VALUES(${rowId}, ${paraInt}, ${paraLong}, ${paraFloat}, ${paraDouble}, ${paraDecimal},
+         ${paraBool}, ${paraString}, ${paraSmallint}, ${paraNumeric}, ${paraReal}, ${paraChar}, ${paraVarchar}, ${paraNVarchar}, ${paraDate}, ${paraTime}, ${paraDatetime}, ${paraTimestamp}, ${paraBinary}, ${paraVarBinary}, ${paraBlob})`;
     validateResult(executeQueryMockClient(sqlQuery), 1);
 
     MockClient dbClient = checkpanic new (url = executeParamsDb, user = user, password = password);
