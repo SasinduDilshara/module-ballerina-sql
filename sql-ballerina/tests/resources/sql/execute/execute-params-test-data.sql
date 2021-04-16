@@ -114,8 +114,8 @@ CREATE TABLE IF NOT EXISTS ArrayTypes2 (
   float_array   FLOAT ARRAY,
   double_array  DOUBLE ARRAY,
   real_array  REAL ARRAY,
-  decimal_array  DECIMAL(6,2) ARRAY,
-  numeric_array    NUMERIC(6,2) ARRAY,
+  decimal_array  DECIMAL(16,4) ARRAY,
+  numeric_array    NUMERIC(16,12) ARRAY,
   boolean_array BOOLEAN ARRAY,
   char_array CHAR(15) ARRAY,
   varchar_array VARCHAR(15) ARRAY,
@@ -126,7 +126,7 @@ CREATE TABLE IF NOT EXISTS ArrayTypes2 (
   datetime_array DATETIME ARRAY,
   timestamp_array DATETIME ARRAY,
   binary_array VARBINARY(27) ARRAY,
-  varbinary_array VARBINARY(27) ARRAY,
+  varbinary_array VARBINARY(2048) ARRAY,
   blob_array VARBINARY(27) ARRAY,
   PRIMARY KEY (row_id)
 );

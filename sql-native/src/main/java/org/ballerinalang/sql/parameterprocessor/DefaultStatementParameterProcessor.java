@@ -351,8 +351,7 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         }
     }
 
-    protected Object[] getSmallIntValueArrayData(Object value) throws ApplicationError {
-        System.out.println("Smallint Array Start");
+    protected Object[] getSmallIntValueArrayData(Object value) throws ApplicationError {        
         BObject objectValue;
         int arrayLength = ((BArray) value).size();
         Object innerValue;
@@ -360,19 +359,18 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         for (int i = 0; i < arrayLength; i++) {
             objectValue = (BObject) ((BArray) value).get(i);
             innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
-            if (innerValue instanceof Integer || innerValue instanceof Long) {
+            if (innerValue == null) {
+                arrayData[i] = null;
+            } else if (innerValue instanceof Integer || innerValue instanceof Long) {
                 arrayData[i] = ((Number) innerValue).shortValue();
             } else {
                 throw throwInvalidParameterError(innerValue, "Smallint Array");
-            }
-            System.out.println("Array data - " + i + " = " + arrayData[i]);
-        }
-        System.out.println("Smallint Array End");
+            }            
+        }        
         return new Object[]{arrayData, "SMALLINT"};
     }
 
-    protected Object[] getIntValueArrayData(Object value) throws ApplicationError {
-        System.out.println("Int Array Start");
+    protected Object[] getIntValueArrayData(Object value) throws ApplicationError {        
         BObject objectValue;
         int arrayLength = ((BArray) value).size();
         Object innerValue;
@@ -380,19 +378,18 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         for (int i = 0; i < arrayLength; i++) {
             objectValue = (BObject) ((BArray) value).get(i);
             innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
-            if (innerValue instanceof Integer || innerValue instanceof Long) {
+            if (innerValue == null) {
+                arrayData[i] = null;
+            } else if (innerValue instanceof Integer || innerValue instanceof Long) {
                 arrayData[i] = ((Number) innerValue).intValue();
             } else {
                 throw throwInvalidParameterError(innerValue, "Int Array");
-            }
-            System.out.println("Array data - " + i + " = " + arrayData[i]);
-        }
-        System.out.println("Int Array End");
+            }            
+        }        
         return new Object[]{arrayData, "INT"};
     }
 
-    protected Object[] getBigIntValueArrayData(Object value) throws ApplicationError {
-        System.out.println("Bigint Array Start");
+    protected Object[] getBigIntValueArrayData(Object value) throws ApplicationError {        
         BObject objectValue;
         int arrayLength = ((BArray) value).size();
         Object innerValue;
@@ -400,14 +397,14 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         for (int i = 0; i < arrayLength; i++) {
             objectValue = (BObject) ((BArray) value).get(i);
             innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
-            if (innerValue instanceof Integer || innerValue instanceof Long) {
+            if (innerValue == null) {
+                arrayData[i] = null;
+            } else if (innerValue instanceof Integer || innerValue instanceof Long) {
                 arrayData[i] = ((Number) innerValue).longValue();
             } else {
                 throw throwInvalidParameterError(innerValue, "Bigint Array");
-            }
-            System.out.println("Array data - " + i + " = " + arrayData[i]);
-        }
-        System.out.println("Bigint Array End");
+            }            
+        }        
         return new Object[]{arrayData, "BIGINT"};
     }
 
@@ -415,12 +412,13 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         BObject objectValue;
         int arrayLength = ((BArray) value).size();
         Object innerValue;
-        Object[] arrayData = new BigDecimal[arrayLength];
-        System.out.println("Decimal Array Start");
+        Object[] arrayData = new BigDecimal[arrayLength];        
         for (int i = 0; i < arrayLength; i++) {
             objectValue = (BObject) ((BArray) value).get(i);
-            innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
-            if (innerValue instanceof Double || innerValue instanceof Long) {
+            innerValue = objectValue.get(Constants.TypedValueFields.VALUE);            
+            if (innerValue == null) {
+                arrayData[i] = null;
+            } else if (innerValue instanceof Double || innerValue instanceof Long) {
                 arrayData[i] = new BigDecimal(((Number) innerValue).doubleValue(), MathContext.DECIMAL64);
             } else if (innerValue instanceof Integer || innerValue instanceof Float) {
                 arrayData[i] = new BigDecimal(((Number) innerValue).doubleValue(), MathContext.DECIMAL32);
@@ -428,15 +426,12 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
                 arrayData[i] = ((BDecimal) innerValue).decimalValue();
             } else {
                 throw throwInvalidParameterError(innerValue, "Decimal Array");
-            }
-            System.out.println("Array data - " + i + " = " + arrayData[i]);
-        }
-        System.out.println("Decimal Array End");
+            }            
+        }        
         return new Object[]{arrayData, "DECIMAL"};
     }
-
-    protected Object[] getRealValueArrayData(Object value) throws ApplicationError {
-        System.out.println("Real Array Start");
+    
+    protected Object[] getRealValueArrayData(Object value) throws ApplicationError {        
         BObject objectValue;
         int arrayLength = ((BArray) value).size();
         Object innerValue;
@@ -444,7 +439,9 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         for (int i = 0; i < arrayLength; i++) {
             objectValue = (BObject) ((BArray) value).get(i);
             innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
-            if (innerValue instanceof Double) {
+            if (innerValue == null) {
+                arrayData[i] = null;
+            } else if (innerValue instanceof Double) {
                 arrayData[i] = ((Number) innerValue).doubleValue();
             } else if (innerValue instanceof Long || innerValue instanceof Float || innerValue instanceof Integer) {
                 arrayData[i] = ((Number) innerValue).doubleValue();
@@ -452,10 +449,8 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
                 arrayData[i] = ((BDecimal) innerValue).decimalValue().doubleValue();
             } else {
                 throw throwInvalidParameterError(innerValue, "Real Array");
-            }
-            System.out.println("Array data - " + i + " = " + arrayData[i]);
-        }
-        System.out.println("Real Array End");
+            }            
+        }        
         return new Object[]{arrayData, "REAL"};
     }
 
@@ -463,12 +458,13 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         BObject objectValue;
         int arrayLength = ((BArray) value).size();
         Object innerValue;
-        Object[] arrayData = new BigDecimal[arrayLength];
-        System.out.println("Numeric Array Start");
+        Object[] arrayData = new BigDecimal[arrayLength];        
         for (int i = 0; i < arrayLength; i++) {
             objectValue = (BObject) ((BArray) value).get(i);
             innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
-            if (innerValue instanceof Double || innerValue instanceof Long) {
+            if (innerValue == null) {
+                arrayData[i] = null;
+            } else if (innerValue instanceof Double || innerValue instanceof Long) {
                 arrayData[i] = new BigDecimal(((Number) innerValue).doubleValue(), MathContext.DECIMAL64);
             } else if (innerValue instanceof Integer || innerValue instanceof Float) {
                 arrayData[i] = new BigDecimal(((Number) innerValue).doubleValue(), MathContext.DECIMAL32);
@@ -476,15 +472,12 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
                 arrayData[i] = ((BDecimal) innerValue).decimalValue();
             } else {
                 throw throwInvalidParameterError(innerValue, "Numeric Array");
-            }
-            System.out.println("Array data - " + i + " = " + arrayData[i]);
-        }
-        System.out.println("Numeric Array End");
+            }            
+        }        
         return new Object[]{arrayData, "NUMERIC"};
     }
     
-    protected Object[] getDoubleValueArrayData(Object value) throws ApplicationError {
-        System.out.println("Double Array Start");
+    protected Object[] getDoubleValueArrayData(Object value) throws ApplicationError {        
         BObject objectValue;
         int arrayLength = ((BArray) value).size();
         Object innerValue;
@@ -492,7 +485,9 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         for (int i = 0; i < arrayLength; i++) {
             objectValue = (BObject) ((BArray) value).get(i);
             innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
-            if (innerValue instanceof Double) {
+            if (innerValue == null) {
+                arrayData[i] = null;
+            } else if (innerValue instanceof Double) {
                 arrayData[i] = ((Number) innerValue).doubleValue();
             } else if (innerValue instanceof Long || innerValue instanceof Float || innerValue instanceof Integer) {
                 arrayData[i] = ((Number) innerValue).doubleValue();
@@ -500,15 +495,12 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
                 arrayData[i] = ((BDecimal) innerValue).decimalValue().doubleValue();
             } else {
                 throw throwInvalidParameterError(innerValue, "Double Array");
-            }
-            System.out.println("Array data - " + i + " = " + arrayData[i]);
-        }
-        System.out.println("Double Array End");
+            }            
+        }        
         return new Object[]{arrayData, "DOUBLE"};
     }
 
-    protected Object[] getFloatValueArrayData(Object value) throws ApplicationError {
-        System.out.println("Float Array Start");
+    protected Object[] getFloatValueArrayData(Object value) throws ApplicationError {        
         BObject objectValue;
         int arrayLength = ((BArray) value).size();
         Object innerValue;
@@ -516,7 +508,9 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         for (int i = 0; i < arrayLength; i++) {
             objectValue = (BObject) ((BArray) value).get(i);
             innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
-            if (innerValue instanceof Double) {
+            if (innerValue == null) {
+                arrayData[i] = null;
+            } else if (innerValue instanceof Double) {
                 arrayData[i] = ((Number) innerValue).doubleValue();
             } else if (innerValue instanceof Long || innerValue instanceof Float || innerValue instanceof Integer) {
                 arrayData[i] = ((Number) innerValue).doubleValue();
@@ -524,10 +518,8 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
                 arrayData[i] = ((BDecimal) innerValue).decimalValue().doubleValue();
             } else {
                 throw throwInvalidParameterError(innerValue, "Float Array");
-            }
-            System.out.println("Array data - " + i + " = " + arrayData[i]);
-        }
-        System.out.println("Float Array End");
+            }            
+        }        
         return new Object[]{arrayData, "FLOAT"};
     }
 
@@ -555,8 +547,7 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         return getBitAndBooleanValueArrayData(value, "Boolean");
     }
 
-    protected Object[] getDateValueArrayData(Object value) throws ApplicationError {
-        System.out.println("DATE" + " Array Start");
+    protected Object[] getDateValueArrayData(Object value) throws ApplicationError {        
         BObject objectValue;
         int arrayLength = ((BArray) value).size();
         Object innerValue;
@@ -564,7 +555,9 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         for (int i = 0; i < arrayLength; i++) {
             objectValue = (BObject) ((BArray) value).get(i);
             innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
-            if (innerValue instanceof BString) {
+            if (innerValue == null) {
+                arrayData[i] = null;
+            } else if (innerValue instanceof BString) {
                 arrayData[i] = Date.valueOf(innerValue.toString());
             } else if (innerValue instanceof BMap) {
                 BMap dateMap = (BMap) innerValue;
@@ -577,15 +570,12 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
                 arrayData[i] = Date.valueOf(year + "-" + month + "-" + day);
             } else {
                 throw throwInvalidParameterError(innerValue, "Date Array");
-            }
-            System.out.println("Array data - " + i + " = " + arrayData[i]);
-        }
-        System.out.println("DATE" + " Array End");
+            }            
+        }        
         return new Object[]{arrayData, "DATE"};
     }
 
-    protected Object[] getTimeValueArrayData(Object value) throws ApplicationError {
-        System.out.println("Time" + " Array Start");
+    protected Object[] getTimeValueArrayData(Object value) throws ApplicationError {        
         BObject objectValue;
         int arrayLength = ((BArray) value).size();
         Object innerValue;
@@ -594,8 +584,11 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         for (int i = 0; i < arrayLength; i++) {
             objectValue = (BObject) ((BArray) value).get(i);
             innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
-            if (innerValue instanceof BString) {
-                arrayData[i] = innerValue.toString();
+            if (innerValue == null) {
+                arrayData[i] = null;
+            } else if (innerValue instanceof BString) {
+                arrayData[i] = LocalTime.parse(innerValue.toString());
+                // arrayData[i] = innerValue.toString();
             } else if (innerValue instanceof BMap) {
                 BMap timeMap = (BMap) innerValue;
                 int hour = Math.toIntExact(timeMap.getIntValue(StringUtils.
@@ -644,10 +637,8 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
                 }
             } else {
                 throw throwInvalidParameterError(innerValue, "Time Array");
-            }
-            System.out.println("Time Array data - " + i + " = " + arrayData[i]);
-        }
-        System.out.println("Time" + " Array End");
+            }            
+        }        
         if (containsTimeZone) {
             return new Object[]{arrayData, "TIME WITH TIMEZONE"};
         } else {
@@ -659,16 +650,15 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         return getBinaryAndBlobValueArrayData(value, "BINARY");
     }
 
-    protected Object[] getVarbinaryValueArrayData(Object value) throws ApplicationError, IOException {
+    protected Object[] getVarbinaryValueArrayData(Object value) throws ApplicationError, IOException {        
         return getBinaryAndBlobValueArrayData(value, "VARBINARY");
     }
 
     protected Object[] getBitValueArrayData(Object value) throws ApplicationError {
-        return getBitAndBooleanValueArrayData(value, "Bit");
+        return getBitAndBooleanValueArrayData(value, "BIT");
     }
 
-    private Object[] getBitAndBooleanValueArrayData(Object value, String type) throws ApplicationError {
-        System.out.println("BOOLEAN" + " Array Start");
+    private Object[] getBitAndBooleanValueArrayData(Object value, String type) throws ApplicationError {        
         BObject objectValue;
         int arrayLength = ((BArray) value).size();
         Object innerValue;
@@ -676,7 +666,9 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         for (int i = 0; i < arrayLength; i++) {
             objectValue = (BObject) ((BArray) value).get(i);
             innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
-            if (innerValue instanceof BString) {
+            if (innerValue == null) {
+                arrayData[i] = null;
+            } else if (innerValue instanceof BString) {
                 arrayData[i] = Boolean.parseBoolean(innerValue.toString());
             } else if (innerValue instanceof Integer || innerValue instanceof Long) {
                 long lVal = ((Number) innerValue).longValue();
@@ -690,53 +682,58 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
                 arrayData[i] = (Boolean) innerValue;
             } else {
                 throw throwInvalidParameterError(innerValue, type + " Array");
-            }
-            System.out.println("Array data - " + i + " = " + arrayData[i]);
-        }
-        System.out.println("BOOLEAN" + " Array End");
+            }            
+        }        
         return new Object[]{arrayData, type};
     }
 
-    private Object[] getBinaryAndBlobValueArrayData(Object value, String type) throws ApplicationError, IOException {
-        System.out.println(type + " Array Start");
+    private Object[] getBinaryAndBlobValueArrayData(Object value, String type) throws ApplicationError, IOException {        
         BObject objectValue;
         int arrayLength = ((BArray) value).size();
         Object innerValue;
         Object[] arrayData = new Object[arrayLength];
         for (int i = 0; i < arrayLength; i++) {
             objectValue = (BObject) ((BArray) value).get(i);
-            innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
-            System.out.println("getBinaryAndBlobValueArrayData value " + innerValue);
-            if (innerValue instanceof BArray) {
-                System.out.println("getBinaryAndBlobValueArrayData BARRAY " + innerValue);
+            innerValue = objectValue.get(Constants.TypedValueFields.VALUE);            
+            if (innerValue == null) {
+                arrayData[i] = null;
+            } else if (innerValue instanceof BArray) {                
                 BArray arrayValue = (BArray) innerValue;
                 if (arrayValue.getElementType().getTag() == org.wso2.ballerinalang.compiler.util.TypeTags.BYTE) {
                     arrayData[i] = arrayValue.getBytes();
                 } else {
                     throw throwInvalidParameterError(innerValue, type);
                 }
-            } else if (innerValue instanceof BObject) {
-                System.out.println("getBinaryAndBlobValueArrayData BObject " + innerValue);
+            } else if (innerValue instanceof BObject) {                
                 objectValue = (BObject) innerValue;
                 if (objectValue.getType().getName().equalsIgnoreCase(Constants.READ_BYTE_CHANNEL_STRUCT) &&
                         objectValue.getType().getPackage().toString()
                             .equalsIgnoreCase(IOUtils.getIOPackage().toString())) {
                     Channel byteChannel = (Channel) objectValue.getNativeData(IOConstants.BYTE_CHANNEL_NAME);
-                    arrayData[i] = byteChannel.getInputStream();
+                    arrayData[i] = toByteArray(byteChannel.getInputStream());
                 } else {
                     throw throwInvalidParameterError(innerValue, type + " Array");
                 }
             } else {
                 throw throwInvalidParameterError(innerValue, type);
-            }
-            System.out.println("Array data - " + i + " = " + arrayData[i]);
-        }
-        System.out.println(type + " Array End");
+            }            
+        }        
         return new Object[]{arrayData, type};
     }
 
-    private Object[] getDateTimeAndTimestampValueArrayData(Object value) throws ApplicationError {
-        System.out.println("DATE" + " Array Start");
+    public static byte[] toByteArray(java.io.InputStream in) throws IOException
+    {
+        java.io.ByteArrayOutputStream os = new java.io.ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = in.read(buffer)) != -1)
+        {
+            os.write(buffer, 0, len);
+        }
+        return os.toByteArray();
+    }
+
+    private Object[] getDateTimeAndTimestampValueArrayData(Object value) throws ApplicationError {        
         BObject objectValue;
         int arrayLength = ((BArray) value).size();
         Object innerValue;
@@ -745,7 +742,12 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         for (int i = 0; i < arrayLength; i++) {
             objectValue = (BObject) ((BArray) value).get(i);
             innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
-            if (innerValue instanceof BArray) {
+            if (innerValue == null) {
+                arrayData[i] = null;
+            } else if (innerValue instanceof BString) {
+                java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                arrayData[i] = LocalDateTime.parse(innerValue.toString(), formatter);
+            } else if (innerValue instanceof BArray) {
                 //this is mapped to time:Utc
                 BArray dateTimeStruct = (BArray) innerValue;
                 ZonedDateTime zonedDt = TimeValueHandler.createZonedDateTimeFromUtc(dateTimeStruct);
@@ -807,10 +809,8 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
                 }
             } else {
                 throw throwInvalidParameterError(value, "TIMESTAMP ARRAY");
-            }
-            System.out.println("Array data - " + i + " = " + arrayData[i]);
-        }
-        System.out.println("DATE" + " Array End");
+            }            
+        }        
         if (containsTimeZone) {
             return new Object[]{arrayData, "TIMESTAMP WITH TIMEZONE"};
         } else {
@@ -818,8 +818,7 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         }
     }
 
-    private Object[] getStringValueArrayData(Object value, String type) throws ApplicationError {
-        System.out.println(type + " Array Start");
+    private Object[] getStringValueArrayData(Object value, String type) throws ApplicationError {        
         BObject objectValue;
         int arrayLength = ((BArray) value).size();
         Object innerValue;
@@ -827,14 +826,14 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         for (int i = 0; i < arrayLength; i++) {
             objectValue = (BObject) ((BArray) value).get(i);
             innerValue = objectValue.get(Constants.TypedValueFields.VALUE);
-            if (innerValue instanceof BString) {
+            if (innerValue == null) {
+                arrayData[i] = null;
+            } else if (innerValue instanceof BString) {
                 arrayData[i] = innerValue.toString();
             } else {
                 throw throwInvalidParameterError(value, type + " Array");
-            }
-            System.out.println("Array data - " + i + " = " + arrayData[i]);
-        }
-        System.out.println(type + " Array End");
+            }            
+        }        
         return new Object[]{arrayData, type};
     }
 
@@ -1491,8 +1490,8 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
     protected Object[] getFloatArrayData(Object value) throws ApplicationError {
         int arrayLength = ((BArray) value).size();
         Object[] arrayData = new Double[arrayLength];
-        for (int i = 0; i < arrayLength; i++) {
-            arrayData[i] = ((BArray) value).getFloat(i);
+        for (int i = 0; i < arrayLength; i++) {            
+            arrayData[i] = ((BArray) value).getFloat(i);            
         }
         return new Object[]{arrayData, "DOUBLE"};
     }
@@ -1501,8 +1500,8 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
     protected Object[] getDecimalArrayData(Object value) throws ApplicationError {
         int arrayLength = ((BArray) value).size();
         Object[] arrayData = new BigDecimal[arrayLength];
-        for (int i = 0; i < arrayLength; i++) {
-            arrayData[i] = ((BDecimal) ((BArray) value).getRefValue(i)).value();
+        for (int i = 0; i < arrayLength; i++) {            
+            arrayData[i] = ((BDecimal) ((BArray) value).getRefValue(i)).value();            
         }
         return new Object[]{arrayData, "DECIMAL"};
     }
@@ -1511,7 +1510,7 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
     protected Object[] getStringArrayData(Object value) throws ApplicationError {
         int arrayLength = ((BArray) value).size();
         Object[] arrayData = new String[arrayLength];
-        for (int i = 0; i < arrayLength; i++) {
+        for (int i = 0; i < arrayLength; i++) {                        
             arrayData[i] = ((BArray) value).getBString(i).getValue();
         }
         return new Object[]{arrayData, "VARCHAR"};
@@ -1537,8 +1536,7 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
             BArray arrayValue = (BArray) value;
             Object[] arrayData = new byte[arrayValue.size()][];
             for (int i = 0; i < arrayData.length; i++) {
-                arrayData[i] = ((BArray) arrayValue.get(i)).getBytes();
-                System.out.println("BLOB ARRAY " + i + " " + arrayData[i]);
+                arrayData[i] = ((BArray) arrayValue.get(i)).getBytes();                
             }
             return new Object[]{arrayData, "BINARY"};
         } else {
