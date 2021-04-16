@@ -101,7 +101,7 @@ public class DefaultResultParameterProcessor extends AbstractResultParameterProc
     }
 
     protected BArray createAndPopulateBBRefValueArray(Object firstNonNullElement, Object[] dataArray,
-                                                      Type type) throws ApplicationError {
+                                                      Type type, Array array) throws ApplicationError {
         BArray refValueArray = null;
         int length = dataArray.length;
         if (firstNonNullElement instanceof String) {
@@ -210,7 +210,7 @@ public class DefaultResultParameterProcessor extends AbstractResultParameterProc
             }
             return refValueArray;
         } else {
-            return createAndPopulateCustomBBRefValueArray(firstNonNullElement, dataArray, type);
+            return createAndPopulateCustomBBRefValueArray(firstNonNullElement, dataArray, type, array);
         }
         for (int i = 0; i < length; i++) {
             refValueArray.add(i, dataArray[i]);
@@ -228,12 +228,12 @@ public class DefaultResultParameterProcessor extends AbstractResultParameterProc
 
     @Override
     protected BArray createAndPopulateCustomBBRefValueArray(Object firstNonNullElement, Object[] dataArray,
-                                                            Type type) {
+            Type type, Array array) {
         return null;
     }
 
-    protected BArray createAndPopulatePrimitiveValueArray(Object firstNonNullElement, Object[] dataArray)
-            throws ApplicationError {
+    protected BArray createAndPopulatePrimitiveValueArray(Object firstNonNullElement, Object[] dataArray,
+            Type type, Array array) throws ApplicationError {
         int length = dataArray.length;
         if (firstNonNullElement instanceof String) {            
             BArray stringDataArray = ValueCreator.createArrayValue(stringArrayType);
@@ -328,12 +328,13 @@ public class DefaultResultParameterProcessor extends AbstractResultParameterProc
             }
             return mapDataArray;
         } else {
-            return createAndPopulateCustomValueArray(firstNonNullElement, dataArray);
+            return createAndPopulateCustomValueArray(firstNonNullElement, dataArray, type, array);
         }
     }
 
     @Override
-    protected BArray createAndPopulateCustomValueArray(Object firstNonNullElement, Object[] dataArray) {
+    protected BArray createAndPopulateCustomValueArray(Object firstNonNullElement, Object[] dataArray,
+         Type type, Array array) {
         return null;
     }
 
@@ -443,10 +444,10 @@ public class DefaultResultParameterProcessor extends AbstractResultParameterProc
 
             if (containsNull) {
                 // If there are some null elements, return a union-type element array
-                return createAndPopulateBBRefValueArray(firstNonNullElement, dataArray, type);
+                return createAndPopulateBBRefValueArray(firstNonNullElement, dataArray, type, array);
             } else {
                 // If there are no null elements, return a ballerina primitive-type array
-                return createAndPopulatePrimitiveValueArray(firstNonNullElement, dataArray);
+                return createAndPopulatePrimitiveValueArray(firstNonNullElement, dataArray, type, array);
             }
 
         } else {
