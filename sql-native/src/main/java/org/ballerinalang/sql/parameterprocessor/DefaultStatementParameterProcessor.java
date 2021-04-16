@@ -558,7 +558,12 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
             if (innerValue == null) {
                 arrayData[i] = null;
             } else if (innerValue instanceof BString) {
-                arrayData[i] = Date.valueOf(innerValue.toString());
+                try {
+                    arrayData[i] = Date.valueOf(innerValue.toString());
+                } catch (java.lang.IllegalArgumentException ex) {
+                    throw new ApplicationError("Unsupported String Value " + innerValue
+                            .toString() + " for Date Array");
+                }
             } else if (innerValue instanceof BMap) {
                 BMap dateMap = (BMap) innerValue;
                 int year = Math.toIntExact(dateMap.getIntValue(StringUtils.
@@ -587,7 +592,12 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
             if (innerValue == null) {
                 arrayData[i] = null;
             } else if (innerValue instanceof BString) {
-                arrayData[i] = LocalTime.parse(innerValue.toString());
+                try {
+                    arrayData[i] = Time.valueOf(innerValue.toString());
+                } catch (java.lang.NumberFormatException ex) {
+                    throw new ApplicationError("Unsupported String Value " + innerValue
+                            .toString() + " for Time Array");
+                }
                 // arrayData[i] = innerValue.toString();
             } else if (innerValue instanceof BMap) {
                 BMap timeMap = (BMap) innerValue;
@@ -687,7 +697,8 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         return new Object[]{arrayData, type};
     }
 
-    private Object[] getBinaryAndBlobValueArrayData(Object value, String type) throws ApplicationError, IOException {        
+    private Object[] getBinaryAndBlobValueArrayData(Object value, String type) 
+            throws ApplicationError, IOException {     
         BObject objectValue;
         int arrayLength = ((BArray) value).size();
         Object innerValue;
@@ -721,13 +732,11 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
         return new Object[]{arrayData, type};
     }
 
-    public static byte[] toByteArray(java.io.InputStream in) throws IOException
-    {
+    public static byte[] toByteArray(java.io.InputStream in) throws IOException {
         java.io.ByteArrayOutputStream os = new java.io.ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
         int len;
-        while ((len = in.read(buffer)) != -1)
-        {
+        while ((len = in.read(buffer)) != -1) {
             os.write(buffer, 0, len);
         }
         return os.toByteArray();
@@ -745,8 +754,14 @@ public class DefaultStatementParameterProcessor extends AbstractStatementParamet
             if (innerValue == null) {
                 arrayData[i] = null;
             } else if (innerValue instanceof BString) {
-                java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                arrayData[i] = LocalDateTime.parse(innerValue.toString(), formatter);
+                try {
+                    java.time.format.DateTimeFormatter formatter = 
+                    java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                    arrayData[i] = LocalDateTime.parse(innerValue.toString(), formatter);
+                } catch (java.time.format.DateTimeParseException ex) {
+                    throw new ApplicationError("Unsupported String Value " + innerValue
+                            .toString() + " for DateTime Array");
+                }
             } else if (innerValue instanceof BArray) {
                 //this is mapped to time:Utc
                 BArray dateTimeStruct = (BArray) innerValue;

@@ -408,40 +408,40 @@ function testGetArrayTypes() returns error? {
     test:assertEquals(value, expectedData, "Expected data did not match.");
 }
 
-// @test:Config {
-//     groups: ["query", "query-complex-params"]
-// }
-// function testGetArrayTypes2() returns error? {
-//     MockClient dbClient = check new (url = complexQueryDb, user = user, password = password);
-//     stream<record{}, error?> streamData = dbClient->query(
-//       "SELECT row_id,smallint_array, int_array, long_array, float_array, double_array, decimal_array, real_array,numeric_array, varchar_array, char_array, nvarchar_array, boolean_array, date_array, time_array, datetime_array, timestamp_array, blob_array from ArrayTypes2 WHERE row_id = 2", ArrayRecord);
-//     record {|record {} value;|}? data = check streamData.next();
-//     check streamData.close();
-//     record {}? value = data?.value;
-//     check dbClient.close();
-//     io:println("\n", "Array Query ", value, "\n");
-//     ArrayRecord expectedData = {
-//         row_id: 2,
-//         blob_array: [null, null],
-//         smallint_array: [null, null],
-//         int_array: [null, null],
-//         long_array: [null, null],
-//         float_array: [null, null],
-//         double_array: [null, null],
-//         decimal_array: [null, null],
-//         real_array: [null, null],
-//         numeric_array: [null, null],
-//         varchar_array:[null, null],
-//         char_array: [null, null],
-//         nvarchar_array: [null, null],
-//         boolean_array: [null, null],
-//         date_array: [null, null],
-//         time_array: [null, null],
-//         datetime_array: [null, null],
-//         timestamp_array: [null, null]
-//     };
-//     test:assertEquals(value, expectedData, "Expected data did not match.");
-// }
+@test:Config {
+    groups: ["query", "query-complex-params"]
+}
+function testGetArrayTypes2() returns error? {
+    MockClient dbClient = check new (url = complexQueryDb, user = user, password = password);
+    stream<record{}, error?> streamData = dbClient->query(
+      "SELECT row_id,smallint_array, int_array, long_array, float_array, double_array, decimal_array, real_array,numeric_array, varchar_array, char_array, nvarchar_array, boolean_array, date_array, time_array, datetime_array, timestamp_array, blob_array from ArrayTypes2 WHERE row_id = 2", ArrayRecord);
+    record {|record {} value;|}? data = check streamData.next();
+    check streamData.close();
+    record {}? value = data?.value;
+    check dbClient.close();
+    io:println("\n", "Array Query ", value, "\n");
+    ArrayRecord expectedData = {
+        row_id: 2,
+        blob_array: [null, null],
+        smallint_array: [null, null],
+        int_array: [null, null],
+        long_array: [null, null],
+        float_array: [null, null],
+        double_array: [null, null],
+        decimal_array: [null, null],
+        real_array: [null, null],
+        numeric_array: [null, null],
+        varchar_array:[null, null],
+        char_array: [null, null],
+        nvarchar_array: [null, null],
+        boolean_array: [null, null],
+        date_array: [null, null],
+        time_array: [null, null],
+        datetime_array: [null, null],
+        timestamp_array: [null, null]
+    };
+    test:assertEquals(value, expectedData, "Expected data did not match.");
+}
 
 @test:Config {
     groups: ["query", "query-complex-params"]
@@ -479,37 +479,37 @@ function testGetArrayTypes3() returns error? {
     test:assertEquals(value, expectedData, "Expected data did not match.");
 }
 
-// @test:Config {
-//     groups: ["query", "query-complex-params"]
-// }
-// function testGetArrayTypes4() returns error? {
-//     MockClient dbClient = check new (url = complexQueryDb, user = user, password = password);
-//     stream<record{}, error?> streamData = dbClient->query(
-//       `SELECT row_id,smallint_array, int_array, long_array, float_array, double_array, decimal_array, real_array,numeric_array, varchar_array, char_array, nvarchar_array, boolean_array, date_array, time_array, datetime_array, timestamp_array, blob_array from ArrayTypes2 WHERE row_id = 4`, ArrayRecord);
-//     record {|record {} value;|}? data = check streamData.next();
-//     check streamData.close();
-//     record {}? value = data?.value;
-//     check dbClient.close();
-//     io:println("\n", "Array Query ", value, "\n");
-//     ArrayRecord expectedData = {
-//         row_id: 4,
-//         blob_array: (),
-//         smallint_array: (),
-//         int_array: (),
-//         long_array: (),
-//         float_array: (),
-//         double_array: (),
-//         decimal_array: (),
-//         real_array: (),
-//         numeric_array: (),
-//         varchar_array:(),
-//         char_array: (),
-//         nvarchar_array: (),
-//         boolean_array: (),
-//         date_array: (),
-//         time_array: (),
-//         datetime_array: (),
-//         timestamp_array: ()
-//     };
-//     test:assertEquals(value, expectedData, "Expected data did not match.");
-// }
+@test:Config {
+    groups: ["query", "query-complex-params"]
+}
+function testGetArrayTypes4() returns error? {
+    MockClient dbClient = check new (url = complexQueryDb, user = user, password = password);
+    stream<record{}, error?> streamData = dbClient->query(
+      `SELECT row_id,smallint_array, int_array, long_array, float_array, double_array, decimal_array, real_array,numeric_array, varchar_array, char_array, nvarchar_array, boolean_array, date_array, time_array, datetime_array, timestamp_array, blob_array from ArrayTypes2 WHERE row_id = 4`, ArrayRecord);
+    record {|record {} value;|}? data = check streamData.next();
+    check streamData.close();
+    record {}? value = data?.value;
+    check dbClient.close();
+    io:println("\n", "Array Query ", value, "\n");
+    ArrayRecord expectedData = {
+        row_id: 4,
+        blob_array: (),
+        smallint_array: (),
+        int_array: (),
+        long_array: (),
+        float_array: (),
+        double_array: (),
+        decimal_array: (),
+        real_array: (),
+        numeric_array: (),
+        varchar_array:(),
+        char_array: (),
+        nvarchar_array: (),
+        boolean_array: (),
+        date_array: (),
+        time_array: (),
+        datetime_array: (),
+        timestamp_array: ()
+    };
+    test:assertEquals(value, expectedData, "Expected data did not match.");
+}
