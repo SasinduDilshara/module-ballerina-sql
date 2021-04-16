@@ -718,6 +718,44 @@ function insertIntoArrayTable6() {
     checkpanic dbClient.close();
 }
 
+@test:Config {
+    groups: ["execute", "execute-params"]
+}
+function insertIntoArrayTable7() {
+    time:Civil? a =();
+    int int1 = 19;
+    int int2 = 492;
+    DoubleValue doubleValue1 = new (int1);
+    DoubleValue doubleValue2 = new (int2);
+    DoubleValue[] datadouble = [doubleValue1, doubleValue2];
+    RealValue realValue1 = new (int1);
+    RealValue realValue2 = new (int2);
+    RealValue[] dataReal = [realValue1, realValue2];
+    DecimalValue decimalValue1 = new (int1);
+    DecimalValue decimalValue2 = new (int2);
+    DecimalValue[] datadecimal = [decimalValue1, decimalValue2];
+    NumericValue numericValue1 = new (int1);
+    NumericValue numericValue2 = new (int2);
+    NumericValue[] dataNumeric = [numericValue1, numericValue2];
+
+    ArrayValue paraReal = new (dataReal);
+    ArrayValue paraDecimal = new (datadecimal);
+    ArrayValue paraNumeric = new (dataNumeric);
+    ArrayValue paraDouble = new (datadouble);
+    int rowId = 11;
+
+    ParameterizedQuery sqlQuery =
+        `INSERT INTO ArrayTypes2 (row_id, double_array, decimal_array,
+         numeric_array, real_array) VALUES(${rowId}, ${paraDouble}, ${paraDecimal},
+         ${paraNumeric}, ${paraReal})`;
+    validateResult(executeQueryMockClient(sqlQuery), 1);
+
+    MockClient dbClient = checkpanic new (url = executeParamsDb, user = user, password = password);
+    record{}? returnData = queryMockClient(executeParamsDb, `select * from arraytypes2 where row_id = 11`);
+    io:println("\n\n", returnData, "\n\n");
+    checkpanic dbClient.close();
+}
+
 function executeQueryMockClient(ParameterizedQuery sqlQuery)
 returns ExecutionResult {
     MockClient dbClient = checkpanic new (url = executeParamsDb, user = user, password = password);
